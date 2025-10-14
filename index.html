@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agende Fácil - Protótipo</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        .page { display: none; animation: fadeIn 0.2s; } /* Delay reduzido */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .active-nav { background-color: #1f2937; color: white !important; /* Cor da fonte branca */ }
+        .footer-nav-link.active { color: #1f2937; /* gray-800 */ }
+        .modal { display: none; }
+        .modal-overlay { background-color: rgba(0, 0, 0, 0.5); }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="flex min-h-screen">
+        <!-- Barra de Navegação Lateral (Visível em Desktop) -->
+        <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col transition-all duration-300">
+            <div class="p-6 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-800">Agende Fácil</h1>
+            </div>
+            <nav class="mt-6 px-3 flex-1">
+                <h2 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Cliente</h2>
+                <div class="mt-2 space-y-1">
+                    <a href="#home" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-calendar-check mr-3 w-5 text-center"></i> Agendar Serviço
+                    </a>
+                    <a href="#meus-agendamentos" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                         <i class="fas fa-receipt mr-3 w-5 text-center"></i> Meus Agendamentos
+                    </a>
+                </div>
+
+                <h2 class="mt-8 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Estabelecimento</h2>
+                <div class="mt-2 space-y-1">
+                    <a href="#dashboard" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-chart-pie mr-3 w-5 text-center"></i> Dashboard
+                    </a>
+                    <a href="#agenda" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i> Agenda do Dia
+                    </a>
+                    <a href="#servicos-estabelecimento" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                         <i class="fas fa-cut mr-3 w-5 text-center"></i> Serviços
+                    </a>
+                     <a href="#profissionais" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                         <i class="fas fa-users mr-3 w-5 text-center"></i> Profissionais
+                    </a>
+                     <a href="#clientes" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                         <i class="fas fa-user-tag mr-3 w-5 text-center"></i> Clientes
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <div class="flex-1 flex flex-col">
+             <header class="bg-white border-b border-gray-200 p-4 flex justify-between items-center z-10">
+                 <button id="toggle-sidebar-btn" class="text-gray-600 hover:text-gray-800 hidden md:block">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                 <h1 class="text-xl font-bold text-gray-800 md:hidden">Agende Fácil</h1>
+                 <!-- Espaçador para centralizar o título em desktop quando o botão não está visível -->
+                 <div class="w-8"></div>
+            </header>
+            <main class="flex-1 p-4 sm:p-6 md:p-10 pb-24 md:pb-10">
+                <!-- Página: Agendamento do Cliente -->
+                <div id="home" class="page">
+                     <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl font-bold">Nossos Serviços</h2>
+                            <p class="mt-1 text-gray-500">Escolha um serviço para agendar seu horário.</p>
+                        </div>
+                        <img src="https://placehold.co/150x80/1f2937/ffffff?text=Sua+Logo" alt="Logo do Salão" class="rounded-lg">
+                    </div>
+                
+                    <div class="mt-8 space-y-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-semibold">Corte Masculino</h3>
+                                <p class="text-sm text-gray-500 flex items-center mt-1"><i class="far fa-clock mr-2"></i> 45min <span class="mx-2">|</span><i class="fas fa-dollar-sign mr-1"></i> a partir de R$ 40,00</p>
+                            </div>
+                            <button class="reservar-btn bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors" data-service="Corte Masculino" data-price="R$ 40,00">Reservar</button>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-semibold">Barba Terapia</h3>
+                                <p class="text-sm text-gray-500 flex items-center mt-1"><i class="far fa-clock mr-2"></i> 30min<span class="mx-2">|</span><i class="fas fa-dollar-sign mr-1"></i> a partir de R$ 35,00</p>
+                            </div>
+                            <button class="reservar-btn bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors" data-service="Barba Terapia" data-price="R$ 35,00">Reservar</button>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-semibold">Combo (Corte + Barba)</h3>
+                                <p class="text-sm text-gray-500 flex items-center mt-1"><i class="far fa-clock mr-2"></i> 1h 15min<span class="mx-2">|</span><i class="fas fa-dollar-sign mr-1"></i> a partir de R$ 70,00</p>
+                            </div>
+                            <button class="reservar-btn bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors" data-service="Combo (Corte + Barba)" data-price="R$ 70,00">Reservar</button>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-semibold">Manicure e Pedicure</h3>
+                                <p class="text-sm text-gray-500 flex items-center mt-1"><i class="far fa-clock mr-2"></i> 1h 30min<span class="mx-2">|</span><i class="fas fa-dollar-sign mr-1"></i> a partir de R$ 55,00</p>
+                            </div>
+                            <button class="reservar-btn bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors" data-service="Manicure e Pedicure" data-price="R$ 55,00">Reservar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Página: Meus Agendamentos -->
+                <div id="meus-agendamentos" class="page">
+                    <h2 class="text-3xl font-bold">Meus Agendamentos</h2>
+                    <p class="mt-1 text-gray-500">Acompanhe, reagende ou cancele seus horários.</p>
+                    <div class="mt-8 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 class="font-semibold text-lg">Próximo Agendamento</h3>
+                        <div class="mt-4 border-t pt-4">
+                            <p class="font-semibold">Corte Masculino</p>
+                            <p class="text-gray-600">com João da Silva</p>
+                            <p class="font-bold mt-2"><i class="fas fa-calendar-alt mr-2"></i>15 de Outubro de 2025 - 10:30</p>
+                            <div class="mt-4 flex space-x-2">
+                                <button class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-md hover:bg-gray-300 transition-colors">Reagendar</button>
+                                <button class="bg-red-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-red-600 transition-colors">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 class="font-semibold text-lg">Histórico</h3>
+                        <div class="mt-4 border-t pt-4 text-sm text-gray-500">
+                            <p>Barba Terapia - 20 de Setembro de 2025 (Concluído)</p>
+                            <p class="mt-2">Corte Masculino - 05 de Setembro de 2025 (Concluído)</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Página: Dashboard do Estabelecimento -->
+                <div id="dashboard" class="page">
+                     <h2 class="text-3xl font-bold">Dashboard</h2>
+                     <p class="mt-1 text-gray-500">Visão geral do seu negócio.</p>
+                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                             <h3 class="text-lg font-medium">Agendamentos Hoje</h3>
+                             <p class="text-3xl font-bold mt-2">12</p>
+                             <p class="text-sm text-green-500">+2 em relação a ontem</p>
+                         </div>
+                         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                             <h3 class="text-lg font-medium">Faturamento (Mês)</h3>
+                             <p class="text-3xl font-bold mt-2">R$ 8.250,00</p>
+                             <p class="text-sm text-gray-500">previsão de R$ 12.000,00</p>
+                         </div>
+                         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                             <h3 class="text-lg font-medium">Taxa de Ocupação</h3>
+                             <p class="text-3xl font-bold mt-2">78%</p>
+                             <p class="text-sm text-gray-500">Média do último mês</p>
+                         </div>
+                     </div>
+                     <div class="mt-8 bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-medium">Faturamento por Mês</h3>
+                        <canvas id="revenueChart" class="mt-4"></canvas>
+                     </div>
+                </div>
+
+                <!-- Página: Agenda do Dia -->
+                <div id="agenda" class="page">
+                    <h2 class="text-3xl font-bold">Agenda do Dia</h2>
+                    <p class="mt-1 text-gray-500">14 de Outubro de 2025</p>
+                    <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <ul class="divide-y divide-gray-200">
+                            <li class="p-4 flex items-center justify-between hover:bg-gray-50">
+                                <div>
+                                    <p class="font-semibold text-gray-800">09:00 - 09:45</p>
+                                    <p class="text-gray-800">Maria Oliveira</p>
+                                    <p class="text-sm text-gray-500">Corte Masculino com João</p>
+                                </div>
+                                <span class="text-sm font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">Confirmado</span>
+                            </li>
+                            <li class="p-4 flex items-center justify-between hover:bg-gray-50">
+                                <div>
+                                    <p class="font-semibold text-gray-800">10:30 - 11:00</p>
+                                    <p class="text-gray-800">Carlos Souza</p>
+                                    <p class="text-sm text-gray-500">Barba Terapia com Pedro</p>
+                                </div>
+                                <span class="text-sm font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">Confirmado</span>
+                            </li>
+                            <li class="p-4 flex items-center justify-between hover:bg-gray-50">
+                                <div>
+                                    <p class="font-semibold text-gray-800">11:00 - 12:30</p>
+                                    <p class="text-gray-800">Ana Clara</p>
+                                    <p class="text-sm text-gray-500">Manicure e Pedicure com Sandra</p>
+                                </div>
+                                <span class="text-sm font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Pendente</span>
+                            </li>
+                            <li class="p-4 flex items-center justify-between bg-red-50 hover:bg-red-100">
+                                <div>
+                                    <p class="font-semibold text-red-600">14:00 - 15:00</p>
+                                    <p class="text-gray-800">Lucas Ferreira</p>
+                                    <p class="text-sm text-gray-500">Combo (Corte + Barba) com João</p>
+                                </div>
+                                <span class="text-sm font-medium bg-red-200 text-red-800 px-2 py-1 rounded-full">Cancelado</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Página: Gerenciar Serviços -->
+                <div id="servicos-estabelecimento" class="page">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                        <div>
+                            <h2 class="text-3xl font-bold">Gerenciar Serviços</h2>
+                            <p class="mt-1 text-gray-500">Adicione, edite ou remova seus serviços.</p>
+                        </div>
+                        <button onclick="openModal('modal-novo-servico')" class="mt-4 sm:mt-0 bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Novo Serviço
+                        </button>
+                    </div>
+                    <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Serviço</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Duração</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Preço</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="p-4">Corte Masculino</td>
+                                    <td class="p-4">45 min</td>
+                                    <td class="p-4">R$ 40,00</td>
+                                    <td class="p-4 space-x-2"><button class="text-gray-600 hover:text-gray-800"><i class="fas fa-pencil-alt"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4">Barba Terapia</td>
+                                    <td class="p-4">30 min</td>
+                                    <td class="p-4">R$ 35,00</td>
+                                    <td class="p-4 space-x-2"><button class="text-gray-600 hover:text-gray-800"><i class="fas fa-pencil-alt"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4">Manicure e Pedicure</td>
+                                    <td class="p-4">1h 30min</td>
+                                    <td class="p-4">R$ 55,00</td>
+                                    <td class="p-4 space-x-2"><button class="text-gray-600 hover:text-gray-800"><i class="fas fa-pencil-alt"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Página: Profissionais -->
+                 <div id="profissionais" class="page">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                        <div>
+                            <h2 class="text-3xl font-bold">Profissionais</h2>
+                            <p class="mt-1 text-gray-500">Gerencie sua equipe.</p>
+                        </div>
+                        <button onclick="openModal('modal-novo-profissional')" class="mt-4 sm:mt-0 bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors">
+                            <i class="fas fa-user-plus mr-2"></i>Novo Profissional
+                        </button>
+                    </div>
+                     <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Nome</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Telefone</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="p-4">João da Silva</td>
+                                    <td class="p-4">(11) 98765-4321</td>
+                                    <td class="p-4 space-x-2"><button class="text-gray-600 hover:text-gray-800"><i class="fas fa-pencil-alt"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4">Pedro Costa</td>
+                                    <td class="p-4">(11) 91234-5678</td>
+                                    <td class="p-4 space-x-2"><button class="text-gray-600 hover:text-gray-800"><i class="fas fa-pencil-alt"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Página: Clientes -->
+                 <div id="clientes" class="page">
+                     <h2 class="text-3xl font-bold">Clientes</h2>
+                     <p class="mt-1 text-gray-500">Visualize seus clientes cadastrados.</p>
+                     <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Nome</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Telefone</th>
+                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Última Visita</th>
+                                </tr>
+                            </thead>
+                             <tbody class="divide-y divide-gray-200">
+                                <tr><td class="p-4">Maria Oliveira</td><td class="p-4">(21) 99999-8888</td><td class="p-4">14/10/2025</td></tr>
+                                <tr><td class="p-4">Carlos Souza</td><td class="p-4">(31) 98888-7777</td><td class="p-4">14/10/2025</td></tr>
+                             </tbody>
+                        </table>
+                     </div>
+                 </div>
+
+                <!-- Página: Fluxo de Agendamento -->
+                <div id="agendamento-fluxo" class="page"></div>
+
+                <!-- Página do Menu Mobile -->
+                <div id="menu-mobile" class="page">
+                    <h2 class="text-2xl sm:text-3xl font-bold">Menu</h2>
+                    <div class="mt-8">
+                        <h3 class="text-lg font-semibold text-gray-800">Ações Rápidas</h3>
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                             <button onclick="quickActionAgendar()" class="bg-gray-800 text-white p-4 rounded-lg shadow-sm flex flex-col items-center justify-center text-center">
+                                <i class="fas fa-calendar-check text-2xl mb-2"></i>
+                                <span class="text-sm font-medium">Agendar</span>
+                            </button>
+                             <button onclick="quickActionNovoServico()" class="bg-white p-4 rounded-lg shadow-sm border flex flex-col items-center justify-center text-center">
+                                <i class="fas fa-cut text-2xl mb-2 text-gray-700"></i>
+                                <span class="text-sm font-medium">Novo Serviço</span>
+                            </button>
+                            <button onclick="quickActionNovoProfissional()" class="bg-white p-4 rounded-lg shadow-sm border flex flex-col items-center justify-center text-center">
+                                <i class="fas fa-user-plus text-2xl mb-2 text-gray-700"></i>
+                                <span class="text-sm font-medium">Novo Profissional</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-10">
+                        <h3 class="text-lg font-semibold text-gray-800">Outras Páginas</h3>
+                        <div class="mt-4 space-y-2">
+                             <a href="#meus-agendamentos" class="bg-white p-4 rounded-lg shadow-sm border flex items-center">
+                                <i class="fas fa-receipt mr-4 text-gray-600"></i>
+                                <span>Meus Agendamentos</span>
+                            </a>
+                             <a href="#servicos-estabelecimento" class="bg-white p-4 rounded-lg shadow-sm border flex items-center">
+                                <i class="fas fa-cut mr-4 text-gray-600"></i>
+                                <span>Serviços</span>
+                            </a>
+                            <a href="#profissionais" class="bg-white p-4 rounded-lg shadow-sm border flex items-center">
+                                <i class="fas fa-users mr-4 text-gray-600"></i>
+                                <span>Profissionais</span>
+                            </a>
+                             <a href="#clientes" class="bg-white p-4 rounded-lg shadow-sm border flex items-center">
+                                <i class="fas fa-user-tag mr-4 text-gray-600"></i>
+                                <span>Clientes</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+    
+    <!-- Menu de Rodapé (Visível em Mobile) -->
+    <footer id="footer-nav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around p-2 z-20">
+        <a href="#home" data-page="home" class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-xs mt-1">Início</span>
+        </a>
+        <a href="#agenda" data-page="agenda" class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1">
+            <i class="fas fa-calendar-alt text-xl"></i>
+            <span class="text-xs mt-1">Agenda</span>
+        </a>
+        <a href="#dashboard" data-page="dashboard" class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1">
+            <i class="fas fa-chart-pie text-xl"></i>
+            <span class="text-xs mt-1">Dashboard</span>
+        </a>
+        <a href="#menu-mobile" data-page="menu-mobile" class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1">
+            <i class="fas fa-bars text-xl"></i>
+            <span class="text-xs mt-1">Menu</span>
+        </a>
+    </footer>
+
+    <!-- Modal: Novo Serviço -->
+    <div id="modal-novo-servico" class="modal fixed inset-0 z-40 items-center justify-center">
+        <div class="modal-overlay fixed inset-0 bg-black opacity-50" onclick="closeModal('modal-novo-servico')"></div>
+        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded-lg shadow-lg z-50 overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-2xl font-semibold">Novo Serviço</h3>
+                    <button onclick="closeModal('modal-novo-servico')" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+                </div>
+                <div class="mt-6">
+                     <form>
+                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700">Nome do Serviço</label><input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"></div>
+                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700">Duração (minutos)</label><input type="number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"></div>
+                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700">Preço (R$)</label><input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"></div>
+                        <div class="mt-6 flex justify-end space-x-3"><button type="button" onclick="closeModal('modal-novo-servico')" class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-md hover:bg-gray-300">Cancelar</button><button type="submit" class="bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900">Salvar</button></div>
+                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Novo Profissional -->
+     <div id="modal-novo-profissional" class="modal fixed inset-0 z-40 items-center justify-center">
+        <div class="modal-overlay fixed inset-0 bg-black opacity-50" onclick="closeModal('modal-novo-profissional')"></div>
+        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded-lg shadow-lg z-50 overflow-y-auto">
+            <div class="p-6">
+                 <div class="flex justify-between items-center"><h3 class="text-2xl font-semibold">Novo Profissional</h3><button onclick="closeModal('modal-novo-profissional')" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button></div>
+                 <div class="mt-6">
+                     <form>
+                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700">Nome do Profissional</label><input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></div>
+                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700">Telefone</label><input type="tel" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></div>
+                        <div class="mt-6 flex justify-end space-x-3"><button type="button" onclick="closeModal('modal-novo-profissional')" class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-md hover:bg-gray-300">Cancelar</button><button type="submit" class="bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900">Salvar</button></div>
+                     </form>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pages = document.querySelectorAll('.page');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const footerNavLinks = document.querySelectorAll('.footer-nav-link');
+            const agendamentoFluxoContainer = document.getElementById('agendamento-fluxo');
+            const sidebar = document.getElementById('sidebar');
+            const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
+            
+            let agendamentoState = {};
+
+            // --- Lógica da Barra Lateral (Desktop) ---
+            if (toggleSidebarBtn && sidebar) {
+                toggleSidebarBtn.addEventListener('click', () => {
+                    sidebar.classList.toggle('hidden');
+                });
+            }
+
+            // --- Funções de Ação Rápida (Mobile) ---
+            window.quickActionAgendar = () => { window.location.hash = '#home'; }
+            window.quickActionNovoServico = () => {
+                window.location.hash = '#servicos-estabelecimento';
+                setTimeout(() => openModal('modal-novo-servico'), 50);
+            }
+            window.quickActionNovoProfissional = () => {
+                window.location.hash = '#profissionais';
+                setTimeout(() => openModal('modal-novo-profissional'), 50);
+            }
+
+            // --- Lógica de Navegação (SPA) ---
+            function showPage(pageId) {
+                const footerNav = document.getElementById('footer-nav');
+                const mainContent = document.querySelector('main');
+                if (pageId === 'agendamento-fluxo' && window.innerWidth < 768) {
+                    footerNav.classList.add('hidden');
+                    mainContent.classList.remove('pb-24');
+                } else if (footerNav) {
+                    footerNav.classList.remove('hidden');
+                     mainContent.classList.add('pb-24');
+                }
+
+                pages.forEach(page => { page.style.display = 'none'; });
+                const activePage = document.getElementById(pageId);
+                if (activePage) { activePage.style.display = 'block'; }
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active-nav');
+                    link.classList.remove('text-white', 'bg-gray-800');
+                    link.classList.add('text-gray-600', 'hover:bg-gray-50', 'hover:text-gray-900');
+                    if (link.getAttribute('href') === '#' + pageId) {
+                        link.classList.add('active-nav');
+                    }
+                });
+
+                footerNavLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.dataset.page === pageId) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            function handleNavigation() {
+                let pageId = window.location.hash.substring(1) || 'home';
+                 if (pageId.startsWith('agendamento-fluxo') && !agendamentoState.service) {
+                    pageId = 'home';
+                    window.location.hash = '#home';
+                }
+                showPage(pageId);
+                if(pageId === 'dashboard') {
+                    renderChart();
+                }
+            }
+            
+            window.addEventListener('hashchange', handleNavigation);
+            handleNavigation();
+
+            // --- Lógica do Fluxo de Agendamento ---
+            function startAgendamento(serviceName, price) {
+                agendamentoState = { service: serviceName, price: price };
+                window.location.hash = '#agendamento-fluxo';
+                renderStep1();
+            }
+            
+             document.querySelectorAll('.reservar-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    startAgendamento(this.dataset.service, this.dataset.price);
+                });
+            });
+
+            function renderStep(title, content, stepNumber) {
+                const totalSteps = 3;
+                let breadcrumbs = `<a href="#home" class="text-gray-800 hover:underline">Serviços</a>`;
+                if(stepNumber > 1) breadcrumbs += ` <span class="mx-2 text-gray-400">/</span> <a href="#" onclick="renderStep1()" class="text-gray-800 hover:underline">Profissional</a>`;
+                if(stepNumber > 2) breadcrumbs += ` <span class="mx-2 text-gray-400">/</span> <a href="#" onclick="renderStep2()" class="text-gray-800 hover:underline">Data e Hora</a>`;
+
+                agendamentoFluxoContainer.innerHTML = `
+                    <div class="max-w-3xl mx-auto">
+                         <div class="mb-6"><p class="text-sm text-gray-500">${breadcrumbs}</p></div>
+                        <div class="bg-white p-8 rounded-xl shadow-lg border">
+                            <h2 class="text-2xl font-bold mb-2">${title}</h2>
+                            <p class="text-gray-600 mb-6">Serviço selecionado: <span class="font-semibold text-gray-900">${agendamentoState.service}</span></p>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mb-8">
+                                <div class="bg-gray-800 h-2 rounded-full" style="width: ${ (stepNumber / totalSteps) * 100}%"></div>
+                            </div>
+                            ${content}
+                        </div>
+                    </div>
+                `;
+            }
+
+            window.renderStep1 = () => {
+                const content = `
+                    <h3 class="font-semibold mb-4">Passo 1: Escolha o profissional</h3>
+                    <div class="space-y-3">
+                        <div onclick="selectProfessional('João da Silva')" class="p-4 border rounded-lg flex items-center justify-between cursor-pointer hover:bg-gray-100 hover:border-gray-400"><span>João da Silva</span><i class="fas fa-chevron-right text-gray-400"></i></div>
+                        <div onclick="selectProfessional('Pedro Costa')" class="p-4 border rounded-lg flex items-center justify-between cursor-pointer hover:bg-gray-100 hover:border-gray-400"><span>Pedro Costa</span><i class="fas fa-chevron-right text-gray-400"></i></div>
+                    </div>`;
+                renderStep("Escolha o Profissional", content, 1);
+            }
+            window.selectProfessional = (name) => {
+                agendamentoState.professional = name;
+                renderStep2();
+            }
+            window.renderStep2 = () => {
+                const content = `
+                    <h3 class="font-semibold mb-4">Passo 2: Escolha a data e o horário</h3>
+                    <p class="text-sm mb-4">Profissional: <span class="font-semibold">${agendamentoState.professional}</span></p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                             <h4 class="font-medium mb-2 text-center">Outubro 2025</h4>
+                             <div class="grid grid-cols-7 gap-1 text-center text-sm">
+                                <div class="text-gray-500">D</div><div class="text-gray-500">S</div><div class="text-gray-500">T</div><div class="text-gray-500">Q</div><div class="text-gray-500">Q</div><div class="text-gray-500">S</div><div class="text-gray-500">S</div>
+                                ${Array.from({length: 31}, (_, i) => i + 1).map(day => `<div class="p-2 rounded-full ${day === 14 ? 'bg-gray-800 text-white' : 'hover:bg-gray-100 cursor-pointer'}">${day}</div>`).join('')}
+                             </div>
+                        </div>
+                        <div>
+                             <h4 class="font-medium mb-2">Horários para 14/10</h4>
+                            <div class="grid grid-cols-3 gap-2">
+                                ${['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'].map(time => `<button onclick="selectTime('${time}')" class="p-2 border rounded-md hover:bg-gray-800 hover:text-white">${time}</button>`).join('')}
+                            </div>
+                        </div>
+                    </div>`;
+                renderStep("Escolha Data e Hora", content, 2);
+            }
+             window.selectTime = (time) => {
+                agendamentoState.time = time;
+                agendamentoState.date = '14 de Outubro de 2025';
+                renderStep3();
+            }
+            window.renderStep3 = () => {
+                const content = `
+                    <h3 class="font-semibold mb-4">Passo 3: Confirme seu agendamento</h3>
+                    <div class="space-y-2 border-l-4 border-gray-800 pl-4 py-2">
+                        <p><strong>Serviço:</strong> ${agendamentoState.service}</p>
+                        <p><strong>Profissional:</strong> ${agendamentoState.professional}</p>
+                        <p><strong>Data:</strong> ${agendamentoState.date}</p>
+                        <p><strong>Horário:</strong> ${agendamentoState.time}</p>
+                        <p><strong>Preço:</strong> ${agendamentoState.price}</p>
+                    </div>
+                    <div class="mt-6 text-right">
+                        <button onclick="confirmAgendamento()" class="bg-gray-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-gray-900">Confirmar Agendamento</button>
+                    </div>
+                `;
+                renderStep("Confirmação", content, 3);
+            }
+            window.confirmAgendamento = () => {
+                alert('Agendamento confirmado com sucesso!');
+                window.location.hash = '#meus-agendamentos';
+            }
+            
+            // --- Lógica de Modals e Gráfico ---
+            let revenueChartInstance = null;
+            function renderChart() {
+                const ctx = document.getElementById('revenueChart');
+                if (!ctx) return;
+                if(revenueChartInstance) { revenueChartInstance.destroy(); }
+                revenueChartInstance = new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                        datasets: [{
+                            label: 'Faturamento',
+                            data: [5200, 6800, 7100, 8250, 9500, 12000],
+                            backgroundColor: 'rgba(31, 41, 55, 0.8)',
+                            borderColor: 'rgba(31, 41, 55, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { scales: { y: { beginAtZero: true } } }
+                });
+            }
+            window.openModal = (modalId) => document.getElementById(modalId).style.display = 'flex';
+            window.closeModal = (modalId) => document.getElementById(modalId).style.display = 'none';
+
+        });
+    </script>
+</body>
+</html>
+
