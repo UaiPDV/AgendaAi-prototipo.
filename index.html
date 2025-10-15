@@ -2163,66 +2163,81 @@
 							Gerencie seu estabelecimento
 						</p>
 
+						<!-- Principal -->
 						<div class="mt-6">
 							<h3
-								class="text-base sm:text-lg font-semibold text-gray-800 mb-4"
+								class="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center"
 							>
-								Ações Rápidas
+								<i class="fas fa-home text-gray-600 mr-2"></i>
+								Principal
 							</h3>
-							<div class="grid grid-cols-2 gap-3 sm:gap-4">
-								<button
-									onclick="quickActionNovoServico()"
-									class="bg-gray-800 text-white p-4 sm:p-5 rounded-lg shadow-sm flex flex-col items-center justify-center text-center hover:bg-gray-900 transition-colors"
-								>
-									<i
-										class="fas fa-cut text-xl sm:text-2xl mb-2"
-									></i>
-									<span class="text-xs sm:text-sm font-medium"
-										>Novo Serviço</span
-									>
-								</button>
-								<button
-									onclick="quickActionNovoProfissional()"
-									class="bg-white p-4 sm:p-5 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors"
-								>
-									<i
-										class="fas fa-user-plus text-xl sm:text-2xl mb-2 text-gray-700"
-									></i>
-									<span class="text-xs sm:text-sm font-medium"
-										>Novo Profissional</span
-									>
-								</button>
+							<div class="space-y-2">
 								<a
-									href="#financeiro"
-									class="bg-green-50 p-4 sm:p-5 rounded-lg shadow-sm border border-green-200 flex flex-col items-center justify-center text-center hover:bg-green-100 transition-colors"
+									href="#dashboard"
+									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
 								>
-									<i
-										class="fas fa-dollar-sign text-xl sm:text-2xl mb-2 text-green-700"
-									></i>
-									<span
-										class="text-xs sm:text-sm font-medium text-gray-800"
-										>Financeiro</span
+									<div
+										class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3"
 									>
+										<i class="fas fa-chart-pie text-blue-600"></i>
+									</div>
+									<div class="flex-1">
+										<p class="font-medium text-sm sm:text-base">
+											Dashboard
+										</p>
+										<p class="text-xs text-gray-500">
+											Visão geral do negócio
+										</p>
+									</div>
+									<i class="fas fa-chevron-right text-gray-400"></i>
 								</a>
 								<a
-									href="#relatorios"
-									class="bg-blue-50 p-4 sm:p-5 rounded-lg shadow-sm border border-blue-200 flex flex-col items-center justify-center text-center hover:bg-blue-100 transition-colors"
+									href="#agenda"
+									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
 								>
-									<i
-										class="fas fa-chart-bar text-xl sm:text-2xl mb-2 text-blue-700"
-									></i>
-									<span
-										class="text-xs sm:text-sm font-medium text-gray-800"
-										>Relatórios</span
+									<div
+										class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3"
 									>
+										<i class="fas fa-calendar-alt text-purple-600"></i>
+									</div>
+									<div class="flex-1">
+										<p class="font-medium text-sm sm:text-base">
+											Agenda
+										</p>
+										<p class="text-xs text-gray-500">
+											Agendamentos de hoje e futuros
+										</p>
+									</div>
+									<i class="fas fa-chevron-right text-gray-400"></i>
+								</a>
+								<a
+									href="#historico-agendamentos"
+									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
+								>
+									<div
+										class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3"
+									>
+										<i class="fas fa-history text-gray-600"></i>
+									</div>
+									<div class="flex-1">
+										<p class="font-medium text-sm sm:text-base">
+											Histórico
+										</p>
+										<p class="text-xs text-gray-500">
+											Agendamentos passados
+										</p>
+									</div>
+									<i class="fas fa-chevron-right text-gray-400"></i>
 								</a>
 							</div>
 						</div>
 
+						<!-- Gerenciamento -->
 						<div class="mt-8">
 							<h3
-								class="text-base sm:text-lg font-semibold text-gray-800 mb-4"
+								class="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center"
 							>
+								<i class="fas fa-briefcase text-gray-600 mr-2"></i>
 								Gerenciamento
 							</h3>
 							<div class="space-y-2">
@@ -2231,81 +2246,117 @@
 									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
 								>
 									<div
-										class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3"
+										class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center mr-3"
 									>
-										<i class="fas fa-cut text-gray-600"></i>
+										<i class="fas fa-concierge-bell text-indigo-600"></i>
 									</div>
 									<div class="flex-1">
-										<p
-											class="font-medium text-sm sm:text-base"
-										>
+										<p class="font-medium text-sm sm:text-base">
 											Serviços
 										</p>
 										<p class="text-xs text-gray-500">
 											Gerencie seus serviços
 										</p>
 									</div>
-									<i
-										class="fas fa-chevron-right text-gray-400"
-									></i>
+									<i class="fas fa-chevron-right text-gray-400"></i>
 								</a>
 								<a
 									href="#profissionais"
 									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
 								>
 									<div
-										class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3"
+										class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center mr-3"
 									>
-										<i
-											class="fas fa-users text-gray-600"
-										></i>
+										<i class="fas fa-users text-teal-600"></i>
 									</div>
 									<div class="flex-1">
-										<p
-											class="font-medium text-sm sm:text-base"
-										>
+										<p class="font-medium text-sm sm:text-base">
 											Profissionais
 										</p>
 										<p class="text-xs text-gray-500">
 											Gerencie sua equipe
 										</p>
 									</div>
-									<i
-										class="fas fa-chevron-right text-gray-400"
-									></i>
+									<i class="fas fa-chevron-right text-gray-400"></i>
 								</a>
 								<a
 									href="#clientes"
 									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
 								>
 									<div
-										class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3"
+										class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center mr-3"
 									>
-										<i
-											class="fas fa-user-tag text-gray-600"
-										></i>
+										<i class="fas fa-user-tag text-pink-600"></i>
 									</div>
 									<div class="flex-1">
-										<p
-											class="font-medium text-sm sm:text-base"
-										>
+										<p class="font-medium text-sm sm:text-base">
 											Clientes
 										</p>
 										<p class="text-xs text-gray-500">
 											Visualize seus clientes
 										</p>
 									</div>
-									<i
-										class="fas fa-chevron-right text-gray-400"
-									></i>
+									<i class="fas fa-chevron-right text-gray-400"></i>
 								</a>
 							</div>
 						</div>
 
+						<!-- Financeiro -->
 						<div class="mt-8">
 							<h3
-								class="text-base sm:text-lg font-semibold text-gray-800 mb-4"
+								class="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center"
 							>
+								<i class="fas fa-dollar-sign text-gray-600 mr-2"></i>
+								Financeiro
+							</h3>
+							<div class="space-y-2">
+								<a
+									href="#financeiro"
+									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
+								>
+									<div
+										class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3"
+									>
+										<i class="fas fa-dollar-sign text-green-600"></i>
+									</div>
+									<div class="flex-1">
+										<p class="font-medium text-sm sm:text-base">
+											Ganhos
+										</p>
+										<p class="text-xs text-gray-500">
+											Acompanhe seus ganhos
+										</p>
+									</div>
+									<i class="fas fa-chevron-right text-gray-400"></i>
+								</a>
+								<a
+									href="#relatorios"
+									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
+								>
+									<div
+										class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3"
+									>
+										<i class="fas fa-chart-bar text-blue-600"></i>
+									</div>
+									<div class="flex-1">
+										<p class="font-medium text-sm sm:text-base">
+											Relatórios
+										</p>
+										<p class="text-xs text-gray-500">
+											Análises e estatísticas
+										</p>
+									</div>
+									<i class="fas fa-chevron-right text-gray-400"></i>
+								</a>
+							</div>
+						</div>
+
+						<!-- Outros -->
+						<div class="mt-8 mb-6">
+							<h3
+								class="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center"
+							>
+								<i class="fas fa-ellipsis-h text-gray-600 mr-2"></i>
 								Outros
 							</h3>
 							<div class="space-y-2">
@@ -2319,43 +2370,33 @@
 										<i class="fas fa-cog text-gray-600"></i>
 									</div>
 									<div class="flex-1">
-										<p
-											class="font-medium text-sm sm:text-base"
-										>
+										<p class="font-medium text-sm sm:text-base">
 											Configurações
 										</p>
 										<p class="text-xs text-gray-500">
 											Configure seu estabelecimento
 										</p>
 									</div>
-									<i
-										class="fas fa-chevron-right text-gray-400"
-									></i>
+									<i class="fas fa-chevron-right text-gray-400"></i>
 								</a>
 								<a
 									href="cliente.html"
-									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
+									class="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg shadow-sm border border-blue-200 flex items-center hover:from-blue-100 hover:to-purple-100 transition-colors"
 								>
 									<div
-										class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3"
+										class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mr-3"
 									>
-										<i
-											class="fas fa-user text-gray-600"
-										></i>
+										<i class="fas fa-user text-white"></i>
 									</div>
 									<div class="flex-1">
-										<p
-											class="font-medium text-sm sm:text-base"
-										>
+										<p class="font-medium text-sm sm:text-base text-blue-900">
 											Área do Cliente
 										</p>
-										<p class="text-xs text-gray-500">
+										<p class="text-xs text-blue-700">
 											Acessar como cliente
 										</p>
 									</div>
-									<i
-										class="fas fa-chevron-right text-gray-400"
-									></i>
+									<i class="fas fa-chevron-right text-blue-600"></i>
 								</a>
 							</div>
 						</div>
@@ -2386,8 +2427,8 @@
 				<span class="text-xs mt-1">Agenda</span>
 			</a>
 			<a
-				href="#servicos"
-				data-page="servicos"
+				href="#servicos-estabelecimento"
+				data-page="servicos-estabelecimento"
 				class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1"
 			>
 				<i class="fas fa-concierge-bell text-xl"></i>
