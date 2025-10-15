@@ -1,625 +1,2851 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agende Fácil - Protótipo</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome para ícones -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chart.js para gráficos -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-        .page { display: none; animation: fadeIn 0.2s; } /* Delay reduzido */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .active-nav { background-color: #1f2937; color: white !important; /* Cor da fonte branca */ }
-        .footer-nav-link.active { color: #1f2937; /* gray-800 */ }
-        .modal { display: none; }
-        .modal-overlay { background-color: rgba(0, 0, 0, 0.5); }
-    </style>
-</head>
-<body class="bg-gray-100 text-gray-800">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Agende Fácil - Estabelecimento</title>
+		<!-- Tailwind CSS -->
+		<script src="https://cdn.tailwindcss.com"></script>
+		<!-- Font Awesome para ícones -->
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+		/>
+		<!-- Google Fonts: Inter -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- Chart.js para gráficos -->
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<style>
+			body {
+				font-family: 'Inter', sans-serif;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+			}
+			.page {
+				display: none;
+				animation: fadeIn 0.2s;
+			}
+			@keyframes fadeIn {
+				from {
+					opacity: 0;
+					transform: translateY(10px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+			.active-nav {
+				background-color: #1f2937;
+				color: white !important;
+			}
+			.active-nav:hover {
+				background-color: #1f2937 !important;
+				color: white !important;
+			}
+			.nav-link {
+				color: #4b5563;
+				transition: all 0.2s;
+			}
+			.nav-link:hover:not(.active-nav) {
+				background-color: #f3f4f6;
+				color: #1f2937;
+			}
+			.footer-nav-link.active {
+				color: #1f2937;
+			}
+			.modal {
+				display: none;
+			}
+			.modal-overlay {
+				background-color: rgba(0, 0, 0, 0.5);
+			}
+		</style>
+	</head>
+	<body class="bg-gray-100 text-gray-800">
+		<div class="flex min-h-screen">
+			<!-- Barra de Navegação Lateral (Visível apenas em Desktop) -->
+			<aside
+				id="sidebar"
+				class="hidden md:flex w-64 bg-white border-r border-gray-200 flex-col transition-all duration-300"
+			>
+				<div class="p-6 flex justify-between items-center">
+					<h1 class="text-2xl font-bold text-gray-800">
+						Agende Fácil
+					</h1>
+				</div>
+				<nav class="mt-6 px-3 flex-1 overflow-y-auto">
+					<h2
+						class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+					>
+						Principal
+					</h2>
+					<div class="mt-2 space-y-1">
+						<a
+							href="#dashboard"
+							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+						>
+							<i
+								class="fas fa-chart-pie mr-3 w-5 text-center"
+							></i>
+							Dashboard
+						</a>
+						<a
+							href="#agenda"
+							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+						>
+							<i
+								class="fas fa-calendar-alt mr-3 w-5 text-center"
+							></i>
+							Agenda
+						</a>
+						<a
+							href="#historico-agendamentos"
+							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+						>
+							<i class="fas fa-history mr-3 w-5 text-center"></i>
+							Histórico
+						</a>
+					</div>
 
-    <div class="flex min-h-screen">
-        <!-- Barra de Navegação Lateral (Visível em Desktop) -->
-        <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col transition-all duration-300">
-            <div class="p-6 flex justify-between items-center">
-                <h1 class="text-2xl font-bold text-gray-800">Agende Fácil</h1>
-            </div>
-            <nav class="mt-6 px-3 flex-1">
-                <h2 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Cliente</h2>
-                <div class="mt-2 space-y-1">
-                    <a href="#home" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-                        <i class="fas fa-calendar-check mr-3 w-5 text-center"></i> Agendar Serviço
-                    </a>
-                    <a href="#meus-agendamentos" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-                         <i class="fas fa-receipt mr-3 w-5 text-center"></i> Meus Agendamentos
-                    </a>
-                </div>
+					<h2
+						class="mt-8 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+					>
+						Gerenciamento
+					</h2>
+					<div class="mt-2 space-y-1">
+						<a
+							href="#servicos-estabelecimento"
+							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+						>
+							<i
+								class="fas fa-concierge-bell mr-3 w-5 text-center"
+							></i>
+							Serviços
+						</a>
+						<a
+							href="#profissionais"
+							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+						>
+							<i class="fas fa-users mr-3 w-5 text-center"></i>
+							Profissionais
+						</a>
+						<a
+							href="#clientes"
+							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+						>
+							<i class="fas fa-user-tag mr-3 w-5 text-center"></i>
+							Clientes
+						</a>
+					</div>
 
-                <h2 class="mt-8 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Estabelecimento</h2>
-                <div class="mt-2 space-y-1">
-                    <a href="#dashboard" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-                        <i class="fas fa-chart-pie mr-3 w-5 text-center"></i> Dashboard
-                    </a>
-                    <a href="#agenda" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-                        <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i> Agenda do Dia
-                    </a>
-                    <a href="#servicos-estabelecimento" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-                         <i class="fas fa-cut mr-3 w-5 text-center"></i> Serviços
-                    </a>
-                     <a href="#profissionais" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-                         <i class="fas fa-users mr-3 w-5 text-center"></i> Profissionais
-                    </a>
-                     <a href="#clientes" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-                         <i class="fas fa-user-tag mr-3 w-5 text-center"></i> Clientes
-                    </a>
-                </div>
-            </nav>
-        </aside>
+					<h2
+						class="mt-8 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+					>
+						Financeiro
+					</h2>
+					<div class="mt-2 space-y-1">
+						<a
+							href="#financeiro"
+							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+						>
+							<i
+								class="fas fa-dollar-sign mr-3 w-5 text-center"
+							></i>
+							Ganhos
+						</a>
+						<a
+							href="#relatorios"
+							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+						>
+							<i
+								class="fas fa-chart-bar mr-3 w-5 text-center"
+							></i>
+							Relatórios
+						</a>
+					</div>
 
-        <!-- Conteúdo Principal -->
-        <div class="flex-1 flex flex-col">
-             <header class="bg-white border-b border-gray-200 p-4 flex justify-between items-center z-10">
-                 <button id="toggle-sidebar-btn" class="text-gray-600 hover:text-gray-800 hidden md:block">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                 <h1 class="text-xl font-bold text-gray-800 md:hidden">Agende Fácil</h1>
-                 <!-- Espaçador para centralizar o título em desktop quando o botão não está visível -->
-                 <div class="w-8"></div>
-            </header>
-            <main class="flex-1 p-4 sm:p-6 md:p-10 pb-24 md:pb-10">
-                <!-- Página: Agendamento do Cliente -->
-                <div id="home" class="page">
-                     <div class="flex items-center justify-between">
-                        <div>
-                            <h2 class="text-2xl sm:text-3xl font-bold">Nossos Serviços</h2>
-                            <p class="mt-1 text-gray-500">Escolha um serviço para agendar seu horário.</p>
-                        </div>
-                        <img src="https://placehold.co/150x80/1f2937/ffffff?text=Sua+Logo" alt="Logo do Salão" class="rounded-lg">
-                    </div>
-                
-                    <div class="mt-8 space-y-4">
-                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
-                            <div>
-                                <h3 class="font-semibold">Corte Masculino</h3>
-                                <p class="text-sm text-gray-500 flex items-center mt-1"><i class="far fa-clock mr-2"></i> 45min <span class="mx-2">|</span><i class="fas fa-dollar-sign mr-1"></i> a partir de R$ 40,00</p>
-                            </div>
-                            <button class="reservar-btn bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors" data-service="Corte Masculino" data-price="R$ 40,00">Reservar</button>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
-                            <div>
-                                <h3 class="font-semibold">Barba Terapia</h3>
-                                <p class="text-sm text-gray-500 flex items-center mt-1"><i class="far fa-clock mr-2"></i> 30min<span class="mx-2">|</span><i class="fas fa-dollar-sign mr-1"></i> a partir de R$ 35,00</p>
-                            </div>
-                            <button class="reservar-btn bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors" data-service="Barba Terapia" data-price="R$ 35,00">Reservar</button>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
-                            <div>
-                                <h3 class="font-semibold">Combo (Corte + Barba)</h3>
-                                <p class="text-sm text-gray-500 flex items-center mt-1"><i class="far fa-clock mr-2"></i> 1h 15min<span class="mx-2">|</span><i class="fas fa-dollar-sign mr-1"></i> a partir de R$ 70,00</p>
-                            </div>
-                            <button class="reservar-btn bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors" data-service="Combo (Corte + Barba)" data-price="R$ 70,00">Reservar</button>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
-                            <div>
-                                <h3 class="font-semibold">Manicure e Pedicure</h3>
-                                <p class="text-sm text-gray-500 flex items-center mt-1"><i class="far fa-clock mr-2"></i> 1h 30min<span class="mx-2">|</span><i class="fas fa-dollar-sign mr-1"></i> a partir de R$ 55,00</p>
-                            </div>
-                            <button class="reservar-btn bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors" data-service="Manicure e Pedicure" data-price="R$ 55,00">Reservar</button>
-                        </div>
-                    </div>
-                </div>
+					<h2
+						class="mt-8 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+					>
+						Outros
+					</h2>
+					<div class="mt-2 space-y-1">
+						<a
+							href="#configuracoes-estabelecimento"
+							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+						>
+							<i class="fas fa-cog mr-3 w-5 text-center"></i>
+							Configurações
+						</a>
+					</div>
+				</nav>
+			</aside>
 
-                <!-- Página: Meus Agendamentos -->
-                <div id="meus-agendamentos" class="page">
-                    <h2 class="text-3xl font-bold">Meus Agendamentos</h2>
-                    <p class="mt-1 text-gray-500">Acompanhe, reagende ou cancele seus horários.</p>
-                    <div class="mt-8 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                        <h3 class="font-semibold text-lg">Próximo Agendamento</h3>
-                        <div class="mt-4 border-t pt-4">
-                            <p class="font-semibold">Corte Masculino</p>
-                            <p class="text-gray-600">com João da Silva</p>
-                            <p class="font-bold mt-2"><i class="fas fa-calendar-alt mr-2"></i>15 de Outubro de 2025 - 10:30</p>
-                            <div class="mt-4 flex space-x-2">
-                                <button class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-md hover:bg-gray-300 transition-colors">Reagendar</button>
-                                <button class="bg-red-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-red-600 transition-colors">Cancelar</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                        <h3 class="font-semibold text-lg">Histórico</h3>
-                        <div class="mt-4 border-t pt-4 text-sm text-gray-500">
-                            <p>Barba Terapia - 20 de Setembro de 2025 (Concluído)</p>
-                            <p class="mt-2">Corte Masculino - 05 de Setembro de 2025 (Concluído)</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Página: Dashboard do Estabelecimento -->
-                <div id="dashboard" class="page">
-                     <h2 class="text-3xl font-bold">Dashboard</h2>
-                     <p class="mt-1 text-gray-500">Visão geral do seu negócio.</p>
-                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-                         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                             <h3 class="text-lg font-medium">Agendamentos Hoje</h3>
-                             <p class="text-3xl font-bold mt-2">12</p>
-                             <p class="text-sm text-green-500">+2 em relação a ontem</p>
-                         </div>
-                         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                             <h3 class="text-lg font-medium">Faturamento (Mês)</h3>
-                             <p class="text-3xl font-bold mt-2">R$ 8.250,00</p>
-                             <p class="text-sm text-gray-500">previsão de R$ 12.000,00</p>
-                         </div>
-                         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                             <h3 class="text-lg font-medium">Taxa de Ocupação</h3>
-                             <p class="text-3xl font-bold mt-2">78%</p>
-                             <p class="text-sm text-gray-500">Média do último mês</p>
-                         </div>
-                     </div>
-                     <div class="mt-8 bg-white p-6 rounded-lg shadow-sm border">
-                        <h3 class="text-lg font-medium">Faturamento por Mês</h3>
-                        <canvas id="revenueChart" class="mt-4"></canvas>
-                     </div>
-                </div>
+			<!-- Conteúdo Principal -->
+			<div class="flex-1 flex flex-col">
+				<header
+					class="bg-white border-b border-gray-200 p-4 flex justify-between items-center z-10"
+				>
+					<h1 class="text-lg sm:text-xl font-bold text-gray-800">
+						Agende Fácil
+					</h1>
+					<a
+						href="cliente.html"
+						class="hidden md:block text-sm text-gray-600 hover:text-gray-800"
+					>
+						<i class="fas fa-user mr-1"></i>Área do Cliente
+					</a>
+				</header>
+				<main class="flex-1 p-4 sm:p-6 md:p-10 pb-24 md:pb-10">
+					<!-- Página: Dashboard do Estabelecimento -->
+					<div id="dashboard" class="page">
+						<h2 class="text-2xl sm:text-3xl font-bold">
+							Dashboard
+						</h2>
+						<p class="mt-1 text-sm sm:text-base text-gray-500">
+							Visão geral do seu negócio em tempo real.
+						</p>
 
-                <!-- Página: Agenda do Dia -->
-                <div id="agenda" class="page">
-                    <h2 class="text-3xl font-bold">Agenda do Dia</h2>
-                    <p class="mt-1 text-gray-500">14 de Outubro de 2025</p>
-                    <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                        <ul class="divide-y divide-gray-200">
-                            <li class="p-4 flex items-center justify-between hover:bg-gray-50">
-                                <div>
-                                    <p class="font-semibold text-gray-800">09:00 - 09:45</p>
-                                    <p class="text-gray-800">Maria Oliveira</p>
-                                    <p class="text-sm text-gray-500">Corte Masculino com João</p>
-                                </div>
-                                <span class="text-sm font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">Confirmado</span>
-                            </li>
-                            <li class="p-4 flex items-center justify-between hover:bg-gray-50">
-                                <div>
-                                    <p class="font-semibold text-gray-800">10:30 - 11:00</p>
-                                    <p class="text-gray-800">Carlos Souza</p>
-                                    <p class="text-sm text-gray-500">Barba Terapia com Pedro</p>
-                                </div>
-                                <span class="text-sm font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">Confirmado</span>
-                            </li>
-                            <li class="p-4 flex items-center justify-between hover:bg-gray-50">
-                                <div>
-                                    <p class="font-semibold text-gray-800">11:00 - 12:30</p>
-                                    <p class="text-gray-800">Ana Clara</p>
-                                    <p class="text-sm text-gray-500">Manicure e Pedicure com Sandra</p>
-                                </div>
-                                <span class="text-sm font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Pendente</span>
-                            </li>
-                            <li class="p-4 flex items-center justify-between bg-red-50 hover:bg-red-100">
-                                <div>
-                                    <p class="font-semibold text-red-600">14:00 - 15:00</p>
-                                    <p class="text-gray-800">Lucas Ferreira</p>
-                                    <p class="text-sm text-gray-500">Combo (Corte + Barba) com João</p>
-                                </div>
-                                <span class="text-sm font-medium bg-red-200 text-red-800 px-2 py-1 rounded-full">Cancelado</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+						<!-- Cards de Métricas -->
+						<div
+							class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-6 sm:mt-8"
+						>
+							<div
+								class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 sm:p-6 rounded-lg shadow-lg"
+							>
+								<div class="flex items-center justify-between">
+									<div>
+										<p class="text-sm opacity-90">
+											Agendamentos Hoje
+										</p>
+										<p
+											class="text-3xl sm:text-4xl font-bold mt-2"
+										>
+											12
+										</p>
+										<p class="text-xs mt-1 opacity-80">
+											<i class="fas fa-arrow-up mr-1"></i
+											>+2 vs ontem
+										</p>
+									</div>
+									<i
+										class="fas fa-calendar-check text-4xl opacity-20"
+									></i>
+								</div>
+							</div>
+							<div
+								class="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 sm:p-6 rounded-lg shadow-lg"
+							>
+								<div class="flex items-center justify-between">
+									<div>
+										<p class="text-sm opacity-90">
+											Faturamento Hoje
+										</p>
+										<p
+											class="text-3xl sm:text-4xl font-bold mt-2"
+										>
+											R$ 520
+										</p>
+										<p class="text-xs mt-1 opacity-80">
+											Meta: R$ 800/dia
+										</p>
+									</div>
+									<i
+										class="fas fa-dollar-sign text-4xl opacity-20"
+									></i>
+								</div>
+							</div>
+							<div
+								class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 sm:p-6 rounded-lg shadow-lg"
+							>
+								<div class="flex items-center justify-between">
+									<div>
+										<p class="text-sm opacity-90">
+											Faturamento Mês
+										</p>
+										<p
+											class="text-3xl sm:text-4xl font-bold mt-2"
+										>
+											R$ 8.2k
+										</p>
+										<p class="text-xs mt-1 opacity-80">
+											Outubro 2025
+										</p>
+									</div>
+									<i
+										class="fas fa-chart-line text-4xl opacity-20"
+									></i>
+								</div>
+							</div>
+							<div
+								class="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-4 sm:p-6 rounded-lg shadow-lg"
+							>
+								<div class="flex items-center justify-between">
+									<div>
+										<p class="text-sm opacity-90">
+											Taxa de Ocupação
+										</p>
+										<p
+											class="text-3xl sm:text-4xl font-bold mt-2"
+										>
+											78%
+										</p>
+										<p class="text-xs mt-1 opacity-80">
+											Últimos 30 dias
+										</p>
+									</div>
+									<i
+										class="fas fa-percentage text-4xl opacity-20"
+									></i>
+								</div>
+							</div>
+						</div>
 
-                <!-- Página: Gerenciar Serviços -->
-                <div id="servicos-estabelecimento" class="page">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-                        <div>
-                            <h2 class="text-3xl font-bold">Gerenciar Serviços</h2>
-                            <p class="mt-1 text-gray-500">Adicione, edite ou remova seus serviços.</p>
-                        </div>
-                        <button onclick="openModal('modal-novo-servico')" class="mt-4 sm:mt-0 bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Novo Serviço
-                        </button>
-                    </div>
-                    <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Serviço</th>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Duração</th>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Preço</th>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                <tr>
-                                    <td class="p-4">Corte Masculino</td>
-                                    <td class="p-4">45 min</td>
-                                    <td class="p-4">R$ 40,00</td>
-                                    <td class="p-4 space-x-2"><button class="text-gray-600 hover:text-gray-800"><i class="fas fa-pencil-alt"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td class="p-4">Barba Terapia</td>
-                                    <td class="p-4">30 min</td>
-                                    <td class="p-4">R$ 35,00</td>
-                                    <td class="p-4 space-x-2"><button class="text-gray-600 hover:text-gray-800"><i class="fas fa-pencil-alt"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td class="p-4">Manicure e Pedicure</td>
-                                    <td class="p-4">1h 30min</td>
-                                    <td class="p-4">R$ 55,00</td>
-                                    <td class="p-4 space-x-2"><button class="text-gray-600 hover:text-gray-800"><i class="fas fa-pencil-alt"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+						<!-- Seção de Gráficos e Listas -->
+						<div
+							class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 sm:mt-8"
+						>
+							<!-- Gráfico de Faturamento -->
+							<div
+								class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+							>
+								<h3 class="text-base sm:text-lg font-medium">
+									Faturamento por Mês
+								</h3>
+								<div
+									class="mt-4"
+									style="position: relative; height: 300px"
+								>
+									<canvas id="revenueChart"></canvas>
+								</div>
+							</div>
 
-                <!-- Página: Profissionais -->
-                 <div id="profissionais" class="page">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-                        <div>
-                            <h2 class="text-3xl font-bold">Profissionais</h2>
-                            <p class="mt-1 text-gray-500">Gerencie sua equipe.</p>
-                        </div>
-                        <button onclick="openModal('modal-novo-profissional')" class="mt-4 sm:mt-0 bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors">
-                            <i class="fas fa-user-plus mr-2"></i>Novo Profissional
-                        </button>
-                    </div>
-                     <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Nome</th>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Telefone</th>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                <tr>
-                                    <td class="p-4">João da Silva</td>
-                                    <td class="p-4">(11) 98765-4321</td>
-                                    <td class="p-4 space-x-2"><button class="text-gray-600 hover:text-gray-800"><i class="fas fa-pencil-alt"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td class="p-4">Pedro Costa</td>
-                                    <td class="p-4">(11) 91234-5678</td>
-                                    <td class="p-4 space-x-2"><button class="text-gray-600 hover:text-gray-800"><i class="fas fa-pencil-alt"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+							<!-- Próximos Agendamentos -->
+							<div
+								class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+							>
+								<div
+									class="flex justify-between items-center mb-4"
+								>
+									<h3
+										class="text-base sm:text-lg font-medium"
+									>
+										Próximos Agendamentos
+									</h3>
+									<a
+										href="#agenda"
+										class="text-sm text-blue-600 hover:text-blue-800"
+									>
+										Ver todos
+									</a>
+								</div>
+								<div class="space-y-3">
+									<div
+										class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+									>
+										<div
+											class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center"
+										>
+											<i
+												class="fas fa-user text-blue-600"
+											></i>
+										</div>
+										<div class="flex-1 min-w-0">
+											<p
+												class="text-sm font-medium truncate"
+											>
+												Maria Oliveira
+											</p>
+											<p class="text-xs text-gray-500">
+												Corte Masculino - 14:00
+											</p>
+										</div>
+										<span
+											class="flex-shrink-0 text-xs font-medium text-gray-600"
+											>R$ 40</span
+										>
+									</div>
+									<div
+										class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+									>
+										<div
+											class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center"
+										>
+											<i
+												class="fas fa-user text-green-600"
+											></i>
+										</div>
+										<div class="flex-1 min-w-0">
+											<p
+												class="text-sm font-medium truncate"
+											>
+												João Silva
+											</p>
+											<p class="text-xs text-gray-500">
+												Barba Terapia - 15:00
+											</p>
+										</div>
+										<span
+											class="flex-shrink-0 text-xs font-medium text-gray-600"
+											>R$ 35</span
+										>
+									</div>
+									<div
+										class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+									>
+										<div
+											class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center"
+										>
+											<i
+												class="fas fa-user text-purple-600"
+											></i>
+										</div>
+										<div class="flex-1 min-w-0">
+											<p
+												class="text-sm font-medium truncate"
+											>
+												Ana Costa
+											</p>
+											<p class="text-xs text-gray-500">
+												Manicure - 16:00
+											</p>
+										</div>
+										<span
+											class="flex-shrink-0 text-xs font-medium text-gray-600"
+											>R$ 55</span
+										>
+									</div>
+								</div>
+							</div>
+						</div>
 
-                <!-- Página: Clientes -->
-                 <div id="clientes" class="page">
-                     <h2 class="text-3xl font-bold">Clientes</h2>
-                     <p class="mt-1 text-gray-500">Visualize seus clientes cadastrados.</p>
-                     <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Nome</th>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Telefone</th>
-                                    <th class="p-4 text-left text-sm font-semibold text-gray-600">Última Visita</th>
-                                </tr>
-                            </thead>
-                             <tbody class="divide-y divide-gray-200">
-                                <tr><td class="p-4">Maria Oliveira</td><td class="p-4">(21) 99999-8888</td><td class="p-4">14/10/2025</td></tr>
-                                <tr><td class="p-4">Carlos Souza</td><td class="p-4">(31) 98888-7777</td><td class="p-4">14/10/2025</td></tr>
-                             </tbody>
-                        </table>
-                     </div>
-                 </div>
+						<!-- Estatísticas Adicionais -->
+						<div
+							class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 sm:mt-8"
+						>
+							<div
+								class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+							>
+								<div class="flex items-center gap-3">
+									<div
+										class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center"
+									>
+										<i
+											class="fas fa-users text-blue-600 text-xl"
+										></i>
+									</div>
+									<div>
+										<p class="text-sm text-gray-500">
+											Clientes Ativos
+										</p>
+										<p class="text-2xl font-bold">147</p>
+									</div>
+								</div>
+							</div>
+							<div
+								class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+							>
+								<div class="flex items-center gap-3">
+									<div
+										class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center"
+									>
+										<i
+											class="fas fa-star text-green-600 text-xl"
+										></i>
+									</div>
+									<div>
+										<p class="text-sm text-gray-500">
+											Avaliação Média
+										</p>
+										<p class="text-2xl font-bold">
+											4.8
+											<span class="text-sm text-gray-400"
+												>/5.0</span
+											>
+										</p>
+									</div>
+								</div>
+							</div>
+							<div
+								class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+							>
+								<div class="flex items-center gap-3">
+									<div
+										class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center"
+									>
+										<i
+											class="fas fa-concierge-bell text-purple-600 text-xl"
+										></i>
+									</div>
+									<div>
+										<p class="text-sm text-gray-500">
+											Serviços Realizados
+										</p>
+										<p class="text-2xl font-bold">1.234</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 
-                <!-- Página: Fluxo de Agendamento -->
-                <div id="agendamento-fluxo" class="page"></div>
+					<!-- Página: Agenda -->
+					<div id="agenda" class="page">
+						<h2 class="text-2xl sm:text-3xl font-bold">Agenda</h2>
+						<p class="mt-1 text-sm sm:text-base text-gray-500">
+							Gerencie todos os agendamentos
+						</p>
 
-                <!-- Página do Menu Mobile -->
-                <div id="menu-mobile" class="page">
-                    <h2 class="text-2xl sm:text-3xl font-bold">Menu</h2>
-                    <div class="mt-8">
-                        <h3 class="text-lg font-semibold text-gray-800">Ações Rápidas</h3>
-                        <div class="grid grid-cols-2 gap-4 mt-4">
-                             <button onclick="quickActionAgendar()" class="bg-gray-800 text-white p-4 rounded-lg shadow-sm flex flex-col items-center justify-center text-center">
-                                <i class="fas fa-calendar-check text-2xl mb-2"></i>
-                                <span class="text-sm font-medium">Agendar</span>
-                            </button>
-                             <button onclick="quickActionNovoServico()" class="bg-white p-4 rounded-lg shadow-sm border flex flex-col items-center justify-center text-center">
-                                <i class="fas fa-cut text-2xl mb-2 text-gray-700"></i>
-                                <span class="text-sm font-medium">Novo Serviço</span>
-                            </button>
-                            <button onclick="quickActionNovoProfissional()" class="bg-white p-4 rounded-lg shadow-sm border flex flex-col items-center justify-center text-center">
-                                <i class="fas fa-user-plus text-2xl mb-2 text-gray-700"></i>
-                                <span class="text-sm font-medium">Novo Profissional</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="mt-10">
-                        <h3 class="text-lg font-semibold text-gray-800">Outras Páginas</h3>
-                        <div class="mt-4 space-y-2">
-                             <a href="#meus-agendamentos" class="bg-white p-4 rounded-lg shadow-sm border flex items-center">
-                                <i class="fas fa-receipt mr-4 text-gray-600"></i>
-                                <span>Meus Agendamentos</span>
-                            </a>
-                             <a href="#servicos-estabelecimento" class="bg-white p-4 rounded-lg shadow-sm border flex items-center">
-                                <i class="fas fa-cut mr-4 text-gray-600"></i>
-                                <span>Serviços</span>
-                            </a>
-                            <a href="#profissionais" class="bg-white p-4 rounded-lg shadow-sm border flex items-center">
-                                <i class="fas fa-users mr-4 text-gray-600"></i>
-                                <span>Profissionais</span>
-                            </a>
-                             <a href="#clientes" class="bg-white p-4 rounded-lg shadow-sm border flex items-center">
-                                <i class="fas fa-user-tag mr-4 text-gray-600"></i>
-                                <span>Clientes</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+						<!-- Agendamentos de Hoje -->
+						<div class="mt-6 sm:mt-8">
+							<div class="flex items-center justify-between mb-4">
+								<h3 class="text-lg sm:text-xl font-semibold">
+									<i
+										class="fas fa-calendar-day text-blue-600 mr-2"
+									></i>
+									Hoje - 15 de Outubro de 2025
+								</h3>
+								<span class="text-sm text-gray-600"
+									>12 agendamentos</span
+								>
+							</div>
+							<div
+								class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+							>
+								<ul class="divide-y divide-gray-200">
+									<li
+										class="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-gray-50 gap-3"
+									>
+										<div class="flex-1">
+											<p
+												class="font-semibold text-gray-800 text-sm sm:text-base"
+											>
+												09:00 - 09:45
+											</p>
+											<p
+												class="text-gray-800 text-sm sm:text-base"
+											>
+												Maria Oliveira
+											</p>
+											<p
+												class="text-xs sm:text-sm text-gray-500"
+											>
+												Corte Masculino com João
+											</p>
+										</div>
+										<span
+											class="text-xs sm:text-sm font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full self-start sm:self-center"
+											>Confirmado</span
+										>
+									</li>
+									<li
+										class="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-gray-50 gap-3"
+									>
+										<div class="flex-1">
+											<p
+												class="font-semibold text-gray-800 text-sm sm:text-base"
+											>
+												10:30 - 11:00
+											</p>
+											<p
+												class="text-gray-800 text-sm sm:text-base"
+											>
+												Carlos Souza
+											</p>
+											<p
+												class="text-xs sm:text-sm text-gray-500"
+											>
+												Barba Terapia com Pedro
+											</p>
+										</div>
+										<span
+											class="text-xs sm:text-sm font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full self-start sm:self-center"
+											>Confirmado</span
+										>
+									</li>
+									<li
+										class="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-gray-50 gap-3"
+									>
+										<div class="flex-1">
+											<p
+												class="font-semibold text-gray-800 text-sm sm:text-base"
+											>
+												11:00 - 12:30
+											</p>
+											<p
+												class="text-gray-800 text-sm sm:text-base"
+											>
+												Ana Clara
+											</p>
+											<p
+												class="text-xs sm:text-sm text-gray-500"
+											>
+												Manicure e Pedicure com Sandra
+											</p>
+										</div>
+										<span
+											class="text-xs sm:text-sm font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full self-start sm:self-center"
+											>Pendente</span
+										>
+									</li>
+									<li
+										class="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between bg-red-50 hover:bg-red-100 gap-3"
+									>
+										<div class="flex-1">
+											<p
+												class="font-semibold text-red-600 text-sm sm:text-base"
+											>
+												14:00 - 15:00
+											</p>
+											<p
+												class="text-gray-800 text-sm sm:text-base"
+											>
+												Lucas Ferreira
+											</p>
+											<p
+												class="text-xs sm:text-sm text-gray-500"
+											>
+												Combo (Corte + Barba) com João
+											</p>
+										</div>
+										<span
+											class="text-xs sm:text-sm font-medium bg-red-200 text-red-800 px-2 py-1 rounded-full self-start sm:self-center"
+											>Cancelado</span
+										>
+									</li>
+								</ul>
+							</div>
+						</div>
 
-            </main>
-        </div>
-    </div>
-    
-    <!-- Menu de Rodapé (Visível em Mobile) -->
-    <footer id="footer-nav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around p-2 z-20">
-        <a href="#home" data-page="home" class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1">
-            <i class="fas fa-home text-xl"></i>
-            <span class="text-xs mt-1">Início</span>
-        </a>
-        <a href="#agenda" data-page="agenda" class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1">
-            <i class="fas fa-calendar-alt text-xl"></i>
-            <span class="text-xs mt-1">Agenda</span>
-        </a>
-        <a href="#dashboard" data-page="dashboard" class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1">
-            <i class="fas fa-chart-pie text-xl"></i>
-            <span class="text-xs mt-1">Dashboard</span>
-        </a>
-        <a href="#menu-mobile" data-page="menu-mobile" class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1">
-            <i class="fas fa-bars text-xl"></i>
-            <span class="text-xs mt-1">Menu</span>
-        </a>
-    </footer>
+						<!-- Próximos Agendamentos -->
+						<div class="mt-8 sm:mt-10">
+							<div class="flex items-center justify-between mb-4">
+								<h3 class="text-lg sm:text-xl font-semibold">
+									<i
+										class="fas fa-calendar-alt text-purple-600 mr-2"
+									></i>
+									Próximos Agendamentos
+								</h3>
+								<span class="text-sm text-gray-600"
+									>54 agendamentos</span
+								>
+							</div>
+							<div
+								class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+							>
+								<ul class="divide-y divide-gray-200">
+									<li
+										class="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-gray-50 gap-3"
+									>
+										<div class="flex-1">
+											<p
+												class="font-semibold text-gray-800 text-sm sm:text-base"
+											>
+												16/10/2025 - 10:00
+											</p>
+											<p
+												class="text-gray-800 text-sm sm:text-base"
+											>
+												Fernanda Lima
+											</p>
+											<p
+												class="text-xs sm:text-sm text-gray-500"
+											>
+												Hidratação Capilar com Sandra
+											</p>
+										</div>
+										<span
+											class="text-xs sm:text-sm font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full self-start sm:self-center"
+											>Confirmado</span
+										>
+									</li>
+									<li
+										class="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-gray-50 gap-3"
+									>
+										<div class="flex-1">
+											<p
+												class="font-semibold text-gray-800 text-sm sm:text-base"
+											>
+												16/10/2025 - 14:30
+											</p>
+											<p
+												class="text-gray-800 text-sm sm:text-base"
+											>
+												Ricardo Alves
+											</p>
+											<p
+												class="text-xs sm:text-sm text-gray-500"
+											>
+												Corte Masculino com João
+											</p>
+										</div>
+										<span
+											class="text-xs sm:text-sm font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full self-start sm:self-center"
+											>Pendente</span
+										>
+									</li>
+									<li
+										class="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-gray-50 gap-3"
+									>
+										<div class="flex-1">
+											<p
+												class="font-semibold text-gray-800 text-sm sm:text-base"
+											>
+												17/10/2025 - 09:00
+											</p>
+											<p
+												class="text-gray-800 text-sm sm:text-base"
+											>
+												Paula Santos
+											</p>
+											<p
+												class="text-xs sm:text-sm text-gray-500"
+											>
+												Manicure com Sandra
+											</p>
+										</div>
+										<span
+											class="text-xs sm:text-sm font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full self-start sm:self-center"
+											>Confirmado</span
+										>
+									</li>
+									<li
+										class="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-gray-50 gap-3"
+									>
+										<div class="flex-1">
+											<p
+												class="font-semibold text-gray-800 text-sm sm:text-base"
+											>
+												17/10/2025 - 11:00
+											</p>
+											<p
+												class="text-gray-800 text-sm sm:text-base"
+											>
+												Bruno Costa
+											</p>
+											<p
+												class="text-xs sm:text-sm text-gray-500"
+											>
+												Barba Terapia com Pedro
+											</p>
+										</div>
+										<span
+											class="text-xs sm:text-sm font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full self-start sm:self-center"
+											>Confirmado</span
+										>
+									</li>
+									<li
+										class="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-gray-50 gap-3"
+									>
+										<div class="flex-1">
+											<p
+												class="font-semibold text-gray-800 text-sm sm:text-base"
+											>
+												18/10/2025 - 15:00
+											</p>
+											<p
+												class="text-gray-800 text-sm sm:text-base"
+											>
+												Juliana Rocha
+											</p>
+											<p
+												class="text-xs sm:text-sm text-gray-500"
+											>
+												Combo (Manicure + Pedicure) com
+												Sandra
+											</p>
+										</div>
+										<span
+											class="text-xs sm:text-sm font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full self-start sm:self-center"
+											>Pendente</span
+										>
+									</li>
+								</ul>
 
-    <!-- Modal: Novo Serviço -->
-    <div id="modal-novo-servico" class="modal fixed inset-0 z-40 items-center justify-center">
-        <div class="modal-overlay fixed inset-0 bg-black opacity-50" onclick="closeModal('modal-novo-servico')"></div>
-        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded-lg shadow-lg z-50 overflow-y-auto">
-            <div class="p-6">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-2xl font-semibold">Novo Serviço</h3>
-                    <button onclick="closeModal('modal-novo-servico')" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
-                </div>
-                <div class="mt-6">
-                     <form>
-                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700">Nome do Serviço</label><input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"></div>
-                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700">Duração (minutos)</label><input type="number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"></div>
-                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700">Preço (R$)</label><input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"></div>
-                        <div class="mt-6 flex justify-end space-x-3"><button type="button" onclick="closeModal('modal-novo-servico')" class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-md hover:bg-gray-300">Cancelar</button><button type="submit" class="bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900">Salvar</button></div>
-                     </form>
-                </div>
-            </div>
-        </div>
-    </div>
+								<!-- Paginação -->
+								<div
+									class="px-4 py-3 bg-gray-50 border-t flex items-center justify-between"
+								>
+									<div class="text-sm text-gray-600">
+										Mostrando 1-5 de 54 agendamentos
+									</div>
+									<div class="flex gap-2">
+										<button
+											class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white text-gray-400 cursor-not-allowed"
+											disabled
+										>
+											<i class="fas fa-chevron-left"></i>
+										</button>
+										<button
+											class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-gray-800 text-white font-medium"
+										>
+											1
+										</button>
+										<button
+											class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-100"
+										>
+											2
+										</button>
+										<button
+											class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-100"
+										>
+											3
+										</button>
+										<button
+											class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-100"
+										>
+											<i class="fas fa-chevron-right"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 
-    <!-- Modal: Novo Profissional -->
-     <div id="modal-novo-profissional" class="modal fixed inset-0 z-40 items-center justify-center">
-        <div class="modal-overlay fixed inset-0 bg-black opacity-50" onclick="closeModal('modal-novo-profissional')"></div>
-        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded-lg shadow-lg z-50 overflow-y-auto">
-            <div class="p-6">
-                 <div class="flex justify-between items-center"><h3 class="text-2xl font-semibold">Novo Profissional</h3><button onclick="closeModal('modal-novo-profissional')" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button></div>
-                 <div class="mt-6">
-                     <form>
-                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700">Nome do Profissional</label><input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></div>
-                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700">Telefone</label><input type="tel" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></div>
-                        <div class="mt-6 flex justify-end space-x-3"><button type="button" onclick="closeModal('modal-novo-profissional')" class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-md hover:bg-gray-300">Cancelar</button><button type="submit" class="bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900">Salvar</button></div>
-                     </form>
-                 </div>
-            </div>
-        </div>
-    </div>
+					<!-- Página: Histórico de Agendamentos -->
+					<div id="historico-agendamentos" class="page">
+						<h2 class="text-2xl sm:text-3xl font-bold">
+							Histórico de Agendamentos
+						</h2>
+						<p class="mt-1 text-sm sm:text-base text-gray-500">
+							Todos os agendamentos concluídos e cancelados
+						</p>
 
+						<!-- Filtros -->
+						<div
+							class="mt-6 sm:mt-8 bg-white p-4 rounded-lg shadow-sm border"
+						>
+							<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+								<div>
+									<label
+										class="block text-sm font-medium text-gray-700 mb-2"
+									>
+										Período
+									</label>
+									<select
+										class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+									>
+										<option>Últimos 7 dias</option>
+										<option>Últimos 30 dias</option>
+										<option>Últimos 3 meses</option>
+										<option>Personalizado</option>
+									</select>
+								</div>
+								<div>
+									<label
+										class="block text-sm font-medium text-gray-700 mb-2"
+									>
+										Status
+									</label>
+									<select
+										class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+									>
+										<option>Todos</option>
+										<option>Concluído</option>
+										<option>Cancelado</option>
+										<option>Não compareceu</option>
+									</select>
+								</div>
+								<div>
+									<label
+										class="block text-sm font-medium text-gray-700 mb-2"
+									>
+										Profissional
+									</label>
+									<select
+										class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+									>
+										<option>Todos</option>
+										<option>João Silva</option>
+										<option>Pedro Santos</option>
+										<option>Sandra Lima</option>
+									</select>
+								</div>
+							</div>
+						</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const pages = document.querySelectorAll('.page');
-            const navLinks = document.querySelectorAll('.nav-link');
-            const footerNavLinks = document.querySelectorAll('.footer-nav-link');
-            const agendamentoFluxoContainer = document.getElementById('agendamento-fluxo');
-            const sidebar = document.getElementById('sidebar');
-            const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
-            
-            let agendamentoState = {};
+						<!-- Tabela de Histórico -->
+						<div
+							class="mt-6 bg-white rounded-lg shadow-sm border overflow-hidden"
+						>
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm">
+									<thead class="bg-gray-50 border-b">
+										<tr>
+											<th
+												class="px-4 py-3 text-left font-medium text-gray-700"
+											>
+												Data/Hora
+											</th>
+											<th
+												class="px-4 py-3 text-left font-medium text-gray-700"
+											>
+												Cliente
+											</th>
+											<th
+												class="px-4 py-3 text-left font-medium text-gray-700"
+											>
+												Serviço
+											</th>
+											<th
+												class="px-4 py-3 text-left font-medium text-gray-700"
+											>
+												Profissional
+											</th>
+											<th
+												class="px-4 py-3 text-left font-medium text-gray-700"
+											>
+												Valor
+											</th>
+											<th
+												class="px-4 py-3 text-left font-medium text-gray-700"
+											>
+												Status
+											</th>
+										</tr>
+									</thead>
+									<tbody class="divide-y divide-gray-200">
+										<tr class="hover:bg-gray-50">
+											<td class="px-4 py-3 text-gray-800">
+												14/10/2025 09:00
+											</td>
+											<td class="px-4 py-3 text-gray-800">
+												Roberto Mendes
+											</td>
+											<td class="px-4 py-3 text-gray-600">
+												Corte Masculino
+											</td>
+											<td class="px-4 py-3 text-gray-600">
+												João Silva
+											</td>
+											<td
+												class="px-4 py-3 font-medium text-gray-800"
+											>
+												R$ 40,00
+											</td>
+											<td class="px-4 py-3">
+												<span
+													class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full"
+												>
+													Concluído
+												</span>
+											</td>
+										</tr>
+										<tr class="hover:bg-gray-50">
+											<td class="px-4 py-3 text-gray-800">
+												13/10/2025 15:30
+											</td>
+											<td class="px-4 py-3 text-gray-800">
+												Carla Dias
+											</td>
+											<td class="px-4 py-3 text-gray-600">
+												Manicure
+											</td>
+											<td class="px-4 py-3 text-gray-600">
+												Sandra Lima
+											</td>
+											<td
+												class="px-4 py-3 font-medium text-gray-800"
+											>
+												R$ 30,00
+											</td>
+											<td class="px-4 py-3">
+												<span
+													class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full"
+												>
+													Concluído
+												</span>
+											</td>
+										</tr>
+										<tr class="hover:bg-gray-50">
+											<td class="px-4 py-3 text-gray-800">
+												13/10/2025 11:00
+											</td>
+											<td class="px-4 py-3 text-gray-800">
+												Thiago Barros
+											</td>
+											<td class="px-4 py-3 text-gray-600">
+												Barba Terapia
+											</td>
+											<td class="px-4 py-3 text-gray-600">
+												Pedro Santos
+											</td>
+											<td
+												class="px-4 py-3 font-medium text-gray-800"
+											>
+												R$ 35,00
+											</td>
+											<td class="px-4 py-3">
+												<span
+													class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full"
+												>
+													Cancelado
+												</span>
+											</td>
+										</tr>
+										<tr class="hover:bg-gray-50">
+											<td class="px-4 py-3 text-gray-800">
+												12/10/2025 16:00
+											</td>
+											<td class="px-4 py-3 text-gray-800">
+												Beatriz Melo
+											</td>
+											<td class="px-4 py-3 text-gray-600">
+												Combo Manicure + Pedicure
+											</td>
+											<td class="px-4 py-3 text-gray-600">
+												Sandra Lima
+											</td>
+											<td
+												class="px-4 py-3 font-medium text-gray-800"
+											>
+												R$ 55,00
+											</td>
+											<td class="px-4 py-3">
+												<span
+													class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full"
+												>
+													Concluído
+												</span>
+											</td>
+										</tr>
+										<tr class="hover:bg-gray-50">
+											<td class="px-4 py-3 text-gray-800">
+												12/10/2025 10:30
+											</td>
+											<td class="px-4 py-3 text-gray-800">
+												Diego Souza
+											</td>
+											<td class="px-4 py-3 text-gray-600">
+												Corte + Barba
+											</td>
+											<td class="px-4 py-3 text-gray-600">
+												João Silva
+											</td>
+											<td
+												class="px-4 py-3 font-medium text-gray-800"
+											>
+												R$ 60,00
+											</td>
+											<td class="px-4 py-3">
+												<span
+													class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full"
+												>
+													Não compareceu
+												</span>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
 
-            // --- Lógica da Barra Lateral (Desktop) ---
-            if (toggleSidebarBtn && sidebar) {
-                toggleSidebarBtn.addEventListener('click', () => {
-                    sidebar.classList.toggle('hidden');
-                });
-            }
+							<!-- Paginação -->
+							<div
+								class="px-4 py-3 bg-gray-50 border-t flex items-center justify-between"
+							>
+								<div class="text-sm text-gray-600">
+									Mostrando 1-5 de 142 registros
+								</div>
+								<div class="flex gap-2">
+									<button
+										class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white text-gray-400 cursor-not-allowed"
+										disabled
+									>
+										<i class="fas fa-chevron-left"></i>
+									</button>
+									<button
+										class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-gray-800 text-white font-medium"
+									>
+										1
+									</button>
+									<button
+										class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-100"
+									>
+										2
+									</button>
+									<button
+										class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-100"
+									>
+										3
+									</button>
+									<button
+										class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-100"
+									>
+										<i class="fas fa-chevron-right"></i>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
 
-            // --- Funções de Ação Rápida (Mobile) ---
-            window.quickActionAgendar = () => { window.location.hash = '#home'; }
-            window.quickActionNovoServico = () => {
-                window.location.hash = '#servicos-estabelecimento';
-                setTimeout(() => openModal('modal-novo-servico'), 50);
-            }
-            window.quickActionNovoProfissional = () => {
-                window.location.hash = '#profissionais';
-                setTimeout(() => openModal('modal-novo-profissional'), 50);
-            }
+					<!-- Página: Gerenciar Serviços -->
+					<div id="servicos-estabelecimento" class="page">
+						<div
+							class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+						>
+							<div>
+								<h2 class="text-2xl sm:text-3xl font-bold">
+									Gerenciar Serviços
+								</h2>
+								<p
+									class="mt-1 text-sm sm:text-base text-gray-500"
+								>
+									Adicione, edite ou remova seus serviços.
+								</p>
+							</div>
+							<button
+								onclick="openModal('modal-novo-servico')"
+								class="w-full sm:w-auto bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors text-sm sm:text-base"
+							>
+								<i class="fas fa-plus mr-2"></i>Novo Serviço
+							</button>
+						</div>
 
-            // --- Lógica de Navegação (SPA) ---
-            function showPage(pageId) {
-                const footerNav = document.getElementById('footer-nav');
-                const mainContent = document.querySelector('main');
-                if (pageId === 'agendamento-fluxo' && window.innerWidth < 768) {
-                    footerNav.classList.add('hidden');
-                    mainContent.classList.remove('pb-24');
-                } else if (footerNav) {
-                    footerNav.classList.remove('hidden');
-                     mainContent.classList.add('pb-24');
-                }
+						<!-- Grid de Cards de Serviços -->
+						<div
+							class="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+						>
+							<!-- Card 1: Corte Masculino -->
+							<div
+								class="bg-white p-5 sm:p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+							>
+								<div
+									class="flex items-start justify-between mb-3"
+								>
+									<div
+										class="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center"
+									>
+										<i
+											class="fas fa-cut text-white text-lg"
+										></i>
+									</div>
+									<div class="flex gap-2">
+										<button
+											onclick="editarServico('corte-masculino')"
+											class="w-8 h-8 flex items-center justify-center rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition-colors"
+										>
+											<i
+												class="fas fa-pencil-alt text-sm"
+											></i>
+										</button>
+										<button
+											onclick="excluirServico('corte-masculino')"
+											class="w-8 h-8 flex items-center justify-center rounded-md text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors"
+										>
+											<i
+												class="fas fa-trash-alt text-sm"
+											></i>
+										</button>
+									</div>
+								</div>
+								<h3
+									class="text-lg font-semibold text-gray-800 mb-2"
+								>
+									Corte Masculino
+								</h3>
+								<div class="space-y-2">
+									<div
+										class="flex items-center text-sm text-gray-600"
+									>
+										<i class="fas fa-clock mr-2 w-4"></i>
+										<span>45 minutos</span>
+									</div>
+									<div
+										class="flex items-center text-sm text-gray-600"
+									>
+										<i class="fas fa-tag mr-2 w-4"></i>
+										<span
+											class="text-lg font-bold text-gray-800"
+											>R$ 40,00</span
+										>
+									</div>
+								</div>
+							</div>
 
-                pages.forEach(page => { page.style.display = 'none'; });
-                const activePage = document.getElementById(pageId);
-                if (activePage) { activePage.style.display = 'block'; }
+							<!-- Card 2: Barba Terapia -->
+							<div
+								class="bg-white p-5 sm:p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+							>
+								<div
+									class="flex items-start justify-between mb-3"
+								>
+									<div
+										class="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center"
+									>
+										<i
+											class="fas fa-scissors text-white text-lg"
+										></i>
+									</div>
+									<div class="flex gap-2">
+										<button
+											onclick="editarServico('barba-terapia')"
+											class="w-8 h-8 flex items-center justify-center rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition-colors"
+										>
+											<i
+												class="fas fa-pencil-alt text-sm"
+											></i>
+										</button>
+										<button
+											onclick="excluirServico('barba-terapia')"
+											class="w-8 h-8 flex items-center justify-center rounded-md text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors"
+										>
+											<i
+												class="fas fa-trash-alt text-sm"
+											></i>
+										</button>
+									</div>
+								</div>
+								<h3
+									class="text-lg font-semibold text-gray-800 mb-2"
+								>
+									Barba Terapia
+								</h3>
+								<div class="space-y-2">
+									<div
+										class="flex items-center text-sm text-gray-600"
+									>
+										<i class="fas fa-clock mr-2 w-4"></i>
+										<span>30 minutos</span>
+									</div>
+									<div
+										class="flex items-center text-sm text-gray-600"
+									>
+										<i class="fas fa-tag mr-2 w-4"></i>
+										<span
+											class="text-lg font-bold text-gray-800"
+											>R$ 35,00</span
+										>
+									</div>
+								</div>
+							</div>
 
-                navLinks.forEach(link => {
-                    link.classList.remove('active-nav');
-                    link.classList.remove('text-white', 'bg-gray-800');
-                    link.classList.add('text-gray-600', 'hover:bg-gray-50', 'hover:text-gray-900');
-                    if (link.getAttribute('href') === '#' + pageId) {
-                        link.classList.add('active-nav');
-                    }
-                });
+							<!-- Card 3: Manicure e Pedicure -->
+							<div
+								class="bg-white p-5 sm:p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+							>
+								<div
+									class="flex items-start justify-between mb-3"
+								>
+									<div
+										class="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center"
+									>
+										<i
+											class="fas fa-hand-sparkles text-white text-lg"
+										></i>
+									</div>
+									<div class="flex gap-2">
+										<button
+											onclick="editarServico('manicure-pedicure')"
+											class="w-8 h-8 flex items-center justify-center rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition-colors"
+										>
+											<i
+												class="fas fa-pencil-alt text-sm"
+											></i>
+										</button>
+										<button
+											onclick="excluirServico('manicure-pedicure')"
+											class="w-8 h-8 flex items-center justify-center rounded-md text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors"
+										>
+											<i
+												class="fas fa-trash-alt text-sm"
+											></i>
+										</button>
+									</div>
+								</div>
+								<h3
+									class="text-lg font-semibold text-gray-800 mb-2"
+								>
+									Manicure e Pedicure
+								</h3>
+								<div class="space-y-2">
+									<div
+										class="flex items-center text-sm text-gray-600"
+									>
+										<i class="fas fa-clock mr-2 w-4"></i>
+										<span>1h 30min</span>
+									</div>
+									<div
+										class="flex items-center text-sm text-gray-600"
+									>
+										<i class="fas fa-tag mr-2 w-4"></i>
+										<span
+											class="text-lg font-bold text-gray-800"
+											>R$ 55,00</span
+										>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 
-                footerNavLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.dataset.page === pageId) {
-                        link.classList.add('active');
-                    }
-                });
-            }
+					<!-- Página: Profissionais -->
+					<div id="profissionais" class="page">
+						<div
+							class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+						>
+							<div>
+								<h2 class="text-2xl sm:text-3xl font-bold">
+									Profissionais
+								</h2>
+								<p
+									class="mt-1 text-sm sm:text-base text-gray-500"
+								>
+									Gerencie sua equipe.
+								</p>
+							</div>
+							<button
+								onclick="openModal('modal-novo-profissional')"
+								class="w-full sm:w-auto bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors text-sm sm:text-base"
+							>
+								<i class="fas fa-user-plus mr-2"></i>Novo
+								Profissional
+							</button>
+						</div>
+						<div
+							class="mt-6 sm:mt-8 bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto"
+						>
+							<table class="w-full">
+								<thead class="bg-gray-50">
+									<tr>
+										<th
+											class="p-3 sm:p-4 text-left text-xs sm:text-sm font-semibold text-gray-600"
+										>
+											Nome
+										</th>
+										<th
+											class="p-3 sm:p-4 text-left text-xs sm:text-sm font-semibold text-gray-600"
+										>
+											Telefone
+										</th>
+										<th
+											class="p-3 sm:p-4 text-left text-xs sm:text-sm font-semibold text-gray-600"
+										>
+											Ações
+										</th>
+									</tr>
+								</thead>
+								<tbody class="divide-y divide-gray-200">
+									<tr>
+										<td
+											class="p-3 sm:p-4 text-sm sm:text-base"
+										>
+											João da Silva
+										</td>
+										<td
+											class="p-3 sm:p-4 text-sm sm:text-base"
+										>
+											(11) 98765-4321
+										</td>
+										<td class="p-3 sm:p-4 space-x-2">
+											<button
+												class="text-gray-600 hover:text-gray-800"
+											>
+												<i
+													class="fas fa-pencil-alt"
+												></i></button
+											><button
+												class="text-red-500 hover:text-red-700"
+											>
+												<i class="fas fa-trash-alt"></i>
+											</button>
+										</td>
+									</tr>
+									<tr>
+										<td
+											class="p-3 sm:p-4 text-sm sm:text-base"
+										>
+											Pedro Costa
+										</td>
+										<td
+											class="p-3 sm:p-4 text-sm sm:text-base"
+										>
+											(11) 91234-5678
+										</td>
+										<td class="p-3 sm:p-4 space-x-2">
+											<button
+												class="text-gray-600 hover:text-gray-800"
+											>
+												<i
+													class="fas fa-pencil-alt"
+												></i></button
+											><button
+												class="text-red-500 hover:text-red-700"
+											>
+												<i class="fas fa-trash-alt"></i>
+											</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 
-            function handleNavigation() {
-                let pageId = window.location.hash.substring(1) || 'home';
-                 if (pageId.startsWith('agendamento-fluxo') && !agendamentoState.service) {
-                    pageId = 'home';
-                    window.location.hash = '#home';
-                }
-                showPage(pageId);
-                if(pageId === 'dashboard') {
-                    renderChart();
-                }
-            }
-            
-            window.addEventListener('hashchange', handleNavigation);
-            handleNavigation();
+					<!-- Página: Clientes -->
+					<div id="clientes" class="page">
+						<h2 class="text-2xl sm:text-3xl font-bold">Clientes</h2>
+						<p class="mt-1 text-sm sm:text-base text-gray-500">
+							Visualize seus clientes cadastrados.
+						</p>
+						<div
+							class="mt-6 sm:mt-8 bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto"
+						>
+							<table class="w-full">
+								<thead class="bg-gray-50">
+									<tr>
+										<th
+											class="p-3 sm:p-4 text-left text-xs sm:text-sm font-semibold text-gray-600"
+										>
+											Nome
+										</th>
+										<th
+											class="p-3 sm:p-4 text-left text-xs sm:text-sm font-semibold text-gray-600"
+										>
+											Telefone
+										</th>
+										<th
+											class="p-3 sm:p-4 text-left text-xs sm:text-sm font-semibold text-gray-600"
+										>
+											Última Visita
+										</th>
+									</tr>
+								</thead>
+								<tbody class="divide-y divide-gray-200">
+									<tr>
+										<td
+											class="p-3 sm:p-4 text-sm sm:text-base"
+										>
+											Maria Oliveira
+										</td>
+										<td
+											class="p-3 sm:p-4 text-sm sm:text-base"
+										>
+											(21) 99999-8888
+										</td>
+										<td
+											class="p-3 sm:p-4 text-sm sm:text-base"
+										>
+											14/10/2025
+										</td>
+									</tr>
+									<tr>
+										<td
+											class="p-3 sm:p-4 text-sm sm:text-base"
+										>
+											Carlos Souza
+										</td>
+										<td
+											class="p-3 sm:p-4 text-sm sm:text-base"
+										>
+											(31) 98888-7777
+										</td>
+										<td
+											class="p-3 sm:p-4 text-sm sm:text-base"
+										>
+											14/10/2025
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 
-            // --- Lógica do Fluxo de Agendamento ---
-            function startAgendamento(serviceName, price) {
-                agendamentoState = { service: serviceName, price: price };
-                window.location.hash = '#agendamento-fluxo';
-                renderStep1();
-            }
-            
-             document.querySelectorAll('.reservar-btn').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    startAgendamento(this.dataset.service, this.dataset.price);
-                });
-            });
+					<!-- Página: Financeiro -->
+					<div id="financeiro" class="page">
+						<h2 class="text-2xl sm:text-3xl font-bold">
+							Financeiro
+						</h2>
+						<p class="mt-1 text-sm sm:text-base text-gray-500">
+							Acompanhe seus ganhos com serviços.
+						</p>
+						<div
+							class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8"
+						>
+							<div
+								class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+							>
+								<div class="flex items-center justify-between">
+									<h3
+										class="text-base sm:text-lg font-medium text-gray-800"
+									>
+										Ganhos do Mês
+									</h3>
+									<i
+										class="fas fa-calendar-alt text-blue-500 text-xl sm:text-2xl"
+									></i>
+								</div>
+								<p
+									class="text-2xl sm:text-3xl font-bold mt-2 text-blue-600"
+								>
+									R$ 8.250,00
+								</p>
+								<p
+									class="text-xs sm:text-sm text-gray-500 mt-1"
+								>
+									Outubro 2025
+								</p>
+							</div>
+							<div
+								class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+							>
+								<div class="flex items-center justify-between">
+									<h3
+										class="text-base sm:text-lg font-medium text-gray-800"
+									>
+										Ganho Total
+									</h3>
+									<i
+										class="fas fa-chart-line text-green-500 text-xl sm:text-2xl"
+									></i>
+								</div>
+								<p
+									class="text-2xl sm:text-3xl font-bold mt-2 text-green-600"
+								>
+									R$ 47.890,00
+								</p>
+								<p
+									class="text-xs sm:text-sm text-gray-500 mt-1"
+								>
+									Desde o início das operações
+								</p>
+							</div>
+						</div>
 
-            function renderStep(title, content, stepNumber) {
-                const totalSteps = 3;
-                let breadcrumbs = `<a href="#home" class="text-gray-800 hover:underline">Serviços</a>`;
-                if(stepNumber > 1) breadcrumbs += ` <span class="mx-2 text-gray-400">/</span> <a href="#" onclick="renderStep1()" class="text-gray-800 hover:underline">Profissional</a>`;
-                if(stepNumber > 2) breadcrumbs += ` <span class="mx-2 text-gray-400">/</span> <a href="#" onclick="renderStep2()" class="text-gray-800 hover:underline">Data e Hora</a>`;
+						<!-- Transações Recentes -->
+						<div
+							class="mt-6 sm:mt-8 bg-white rounded-lg shadow-sm border p-4 sm:p-6"
+						>
+							<h3 class="text-base sm:text-lg font-medium mb-4">
+								Transações Recentes
+							</h3>
+							<div class="space-y-3">
+								<div
+									class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b"
+								>
+									<div class="flex-1">
+										<p
+											class="font-medium text-sm sm:text-base"
+										>
+											Corte Masculino
+										</p>
+										<p
+											class="text-xs sm:text-sm text-gray-500"
+										>
+											Maria Oliveira - 14/10/2025 às 09:45
+										</p>
+									</div>
+									<span
+										class="text-sm sm:text-base font-semibold text-green-600 self-start sm:self-center"
+										>R$ 40,00</span
+									>
+								</div>
+								<div
+									class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b"
+								>
+									<div class="flex-1">
+										<p
+											class="font-medium text-sm sm:text-base"
+										>
+											Barba Terapia
+										</p>
+										<p
+											class="text-xs sm:text-sm text-gray-500"
+										>
+											Carlos Souza - 14/10/2025 às 11:00
+										</p>
+									</div>
+									<span
+										class="text-sm sm:text-base font-semibold text-green-600 self-start sm:self-center"
+										>R$ 35,00</span
+									>
+								</div>
+								<div
+									class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b"
+								>
+									<div class="flex-1">
+										<p
+											class="font-medium text-sm sm:text-base"
+										>
+											Combo (Corte + Barba)
+										</p>
+										<p
+											class="text-xs sm:text-sm text-gray-500"
+										>
+											João Silva - 13/10/2025 às 15:30
+										</p>
+									</div>
+									<span
+										class="text-sm sm:text-base font-semibold text-green-600 self-start sm:self-center"
+										>R$ 70,00</span
+									>
+								</div>
+								<div
+									class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3"
+								>
+									<div class="flex-1">
+										<p
+											class="font-medium text-sm sm:text-base"
+										>
+											Manicure e Pedicure
+										</p>
+										<p
+											class="text-xs sm:text-sm text-gray-500"
+										>
+											Ana Paula - 13/10/2025 às 10:15
+										</p>
+									</div>
+									<span
+										class="text-sm sm:text-base font-semibold text-green-600 self-start sm:self-center"
+										>R$ 55,00</span
+									>
+								</div>
+							</div>
+						</div>
 
-                agendamentoFluxoContainer.innerHTML = `
-                    <div class="max-w-3xl mx-auto">
-                         <div class="mb-6"><p class="text-sm text-gray-500">${breadcrumbs}</p></div>
-                        <div class="bg-white p-8 rounded-xl shadow-lg border">
-                            <h2 class="text-2xl font-bold mb-2">${title}</h2>
-                            <p class="text-gray-600 mb-6">Serviço selecionado: <span class="font-semibold text-gray-900">${agendamentoState.service}</span></p>
-                            <div class="w-full bg-gray-200 rounded-full h-2 mb-8">
-                                <div class="bg-gray-800 h-2 rounded-full" style="width: ${ (stepNumber / totalSteps) * 100}%"></div>
-                            </div>
-                            ${content}
-                        </div>
-                    </div>
-                `;
-            }
+						<!-- Histórico Completo -->
+						<div
+							class="mt-6 sm:mt-8 bg-white rounded-lg shadow-sm border overflow-hidden"
+						>
+							<div class="p-4 sm:p-6 border-b bg-gray-50">
+								<h3 class="text-base sm:text-lg font-medium">
+									Histórico Completo
+								</h3>
+								<p
+									class="text-xs sm:text-sm text-gray-500 mt-1"
+								>
+									Todos os ganhos com serviços
+								</p>
+							</div>
+							<div class="overflow-x-auto">
+								<table class="w-full">
+									<thead class="bg-gray-50 border-b">
+										<tr>
+											<th
+												class="text-left p-3 sm:p-4 text-xs sm:text-sm font-medium text-gray-600"
+											>
+												Data
+											</th>
+											<th
+												class="text-left p-3 sm:p-4 text-xs sm:text-sm font-medium text-gray-600"
+											>
+												Serviço
+											</th>
+											<th
+												class="text-left p-3 sm:p-4 text-xs sm:text-sm font-medium text-gray-600"
+											>
+												Cliente
+											</th>
+											<th
+												class="text-right p-3 sm:p-4 text-xs sm:text-sm font-medium text-gray-600"
+											>
+												Valor
+											</th>
+										</tr>
+									</thead>
+									<tbody class="divide-y divide-gray-200">
+										<tr class="hover:bg-gray-50">
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												14/10/2025
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Corte Masculino
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Maria Oliveira
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm text-right font-semibold text-green-600"
+											>
+												R$ 40,00
+											</td>
+										</tr>
+										<tr class="hover:bg-gray-50">
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												14/10/2025
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Barba Terapia
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Carlos Souza
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm text-right font-semibold text-green-600"
+											>
+												R$ 35,00
+											</td>
+										</tr>
+										<tr class="hover:bg-gray-50">
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												13/10/2025
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Combo (Corte + Barba)
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												João Silva
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm text-right font-semibold text-green-600"
+											>
+												R$ 70,00
+											</td>
+										</tr>
+										<tr class="hover:bg-gray-50">
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												13/10/2025
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Manicure e Pedicure
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Ana Paula
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm text-right font-semibold text-green-600"
+											>
+												R$ 55,00
+											</td>
+										</tr>
+										<tr class="hover:bg-gray-50">
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												12/10/2025
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Corte Feminino
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Beatriz Costa
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm text-right font-semibold text-green-600"
+											>
+												R$ 60,00
+											</td>
+										</tr>
+										<tr class="hover:bg-gray-50">
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												12/10/2025
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Escova
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Juliana Mendes
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm text-right font-semibold text-green-600"
+											>
+												R$ 50,00
+											</td>
+										</tr>
+										<tr class="hover:bg-gray-50">
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												11/10/2025
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Combo (Corte + Barba)
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Pedro Santos
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm text-right font-semibold text-green-600"
+											>
+												R$ 70,00
+											</td>
+										</tr>
+										<tr class="hover:bg-gray-50">
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												11/10/2025
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Corte Masculino
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm"
+											>
+												Lucas Almeida
+											</td>
+											<td
+												class="p-3 sm:p-4 text-xs sm:text-sm text-right font-semibold text-green-600"
+											>
+												R$ 40,00
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
 
-            window.renderStep1 = () => {
-                const content = `
-                    <h3 class="font-semibold mb-4">Passo 1: Escolha o profissional</h3>
-                    <div class="space-y-3">
-                        <div onclick="selectProfessional('João da Silva')" class="p-4 border rounded-lg flex items-center justify-between cursor-pointer hover:bg-gray-100 hover:border-gray-400"><span>João da Silva</span><i class="fas fa-chevron-right text-gray-400"></i></div>
-                        <div onclick="selectProfessional('Pedro Costa')" class="p-4 border rounded-lg flex items-center justify-between cursor-pointer hover:bg-gray-100 hover:border-gray-400"><span>Pedro Costa</span><i class="fas fa-chevron-right text-gray-400"></i></div>
-                    </div>`;
-                renderStep("Escolha o Profissional", content, 1);
-            }
-            window.selectProfessional = (name) => {
-                agendamentoState.professional = name;
-                renderStep2();
-            }
-            window.renderStep2 = () => {
-                const content = `
-                    <h3 class="font-semibold mb-4">Passo 2: Escolha a data e o horário</h3>
-                    <p class="text-sm mb-4">Profissional: <span class="font-semibold">${agendamentoState.professional}</span></p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                             <h4 class="font-medium mb-2 text-center">Outubro 2025</h4>
-                             <div class="grid grid-cols-7 gap-1 text-center text-sm">
-                                <div class="text-gray-500">D</div><div class="text-gray-500">S</div><div class="text-gray-500">T</div><div class="text-gray-500">Q</div><div class="text-gray-500">Q</div><div class="text-gray-500">S</div><div class="text-gray-500">S</div>
-                                ${Array.from({length: 31}, (_, i) => i + 1).map(day => `<div class="p-2 rounded-full ${day === 14 ? 'bg-gray-800 text-white' : 'hover:bg-gray-100 cursor-pointer'}">${day}</div>`).join('')}
-                             </div>
-                        </div>
-                        <div>
-                             <h4 class="font-medium mb-2">Horários para 14/10</h4>
-                            <div class="grid grid-cols-3 gap-2">
-                                ${['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'].map(time => `<button onclick="selectTime('${time}')" class="p-2 border rounded-md hover:bg-gray-800 hover:text-white">${time}</button>`).join('')}
-                            </div>
-                        </div>
-                    </div>`;
-                renderStep("Escolha Data e Hora", content, 2);
-            }
-             window.selectTime = (time) => {
-                agendamentoState.time = time;
-                agendamentoState.date = '14 de Outubro de 2025';
-                renderStep3();
-            }
-            window.renderStep3 = () => {
-                const content = `
-                    <h3 class="font-semibold mb-4">Passo 3: Confirme seu agendamento</h3>
-                    <div class="space-y-2 border-l-4 border-gray-800 pl-4 py-2">
-                        <p><strong>Serviço:</strong> ${agendamentoState.service}</p>
-                        <p><strong>Profissional:</strong> ${agendamentoState.professional}</p>
-                        <p><strong>Data:</strong> ${agendamentoState.date}</p>
-                        <p><strong>Horário:</strong> ${agendamentoState.time}</p>
-                        <p><strong>Preço:</strong> ${agendamentoState.price}</p>
-                    </div>
-                    <div class="mt-6 text-right">
-                        <button onclick="confirmAgendamento()" class="bg-gray-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-gray-900">Confirmar Agendamento</button>
-                    </div>
-                `;
-                renderStep("Confirmação", content, 3);
-            }
-            window.confirmAgendamento = () => {
-                alert('Agendamento confirmado com sucesso!');
-                window.location.hash = '#meus-agendamentos';
-            }
-            
-            // --- Lógica de Modals e Gráfico ---
-            let revenueChartInstance = null;
-            function renderChart() {
-                const ctx = document.getElementById('revenueChart');
-                if (!ctx) return;
-                if(revenueChartInstance) { revenueChartInstance.destroy(); }
-                revenueChartInstance = new Chart(ctx.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: ['Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-                        datasets: [{
-                            label: 'Faturamento',
-                            data: [5200, 6800, 7100, 8250, 9500, 12000],
-                            backgroundColor: 'rgba(31, 41, 55, 0.8)',
-                            borderColor: 'rgba(31, 41, 55, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: { scales: { y: { beginAtZero: true } } }
-                });
-            }
-            window.openModal = (modalId) => document.getElementById(modalId).style.display = 'flex';
-            window.closeModal = (modalId) => document.getElementById(modalId).style.display = 'none';
+					<!-- Página: Relatórios -->
+					<div id="relatorios" class="page">
+						<h2 class="text-2xl sm:text-3xl font-bold">
+							Relatórios
+						</h2>
+						<p class="mt-1 text-sm sm:text-base text-gray-500">
+							Análises e estatísticas do seu negócio.
+						</p>
+						<div
+							class="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"
+						>
+							<div
+								class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+							>
+								<h3
+									class="text-base sm:text-lg font-medium mb-4"
+								>
+									Serviços Mais Agendados
+								</h3>
+								<div class="space-y-3">
+									<div>
+										<div
+											class="flex justify-between text-xs sm:text-sm mb-1"
+										>
+											<span>Corte Masculino</span>
+											<span class="font-semibold"
+												>45%</span
+											>
+										</div>
+										<div
+											class="w-full bg-gray-200 rounded-full h-2"
+										>
+											<div
+												class="bg-gray-800 h-2 rounded-full"
+												style="width: 45%"
+											></div>
+										</div>
+									</div>
+									<div>
+										<div
+											class="flex justify-between text-xs sm:text-sm mb-1"
+										>
+											<span>Barba Terapia</span>
+											<span class="font-semibold"
+												>30%</span
+											>
+										</div>
+										<div
+											class="w-full bg-gray-200 rounded-full h-2"
+										>
+											<div
+												class="bg-gray-800 h-2 rounded-full"
+												style="width: 30%"
+											></div>
+										</div>
+									</div>
+									<div>
+										<div
+											class="flex justify-between text-xs sm:text-sm mb-1"
+										>
+											<span>Manicure/Pedicure</span>
+											<span class="font-semibold"
+												>25%</span
+											>
+										</div>
+										<div
+											class="w-full bg-gray-200 rounded-full h-2"
+										>
+											<div
+												class="bg-gray-800 h-2 rounded-full"
+												style="width: 25%"
+											></div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+							>
+								<h3
+									class="text-base sm:text-lg font-medium mb-4"
+								>
+									Desempenho dos Profissionais
+								</h3>
+								<div class="space-y-3">
+									<div
+										class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b"
+									>
+										<div>
+											<p
+												class="font-medium text-sm sm:text-base"
+											>
+												João da Silva
+											</p>
+											<p
+												class="text-xs sm:text-sm text-gray-500"
+											>
+												156 atendimentos
+											</p>
+										</div>
+										<span
+											class="text-xs sm:text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full self-start sm:self-center"
+											>Excelente</span
+										>
+									</div>
+									<div
+										class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b"
+									>
+										<div>
+											<p
+												class="font-medium text-sm sm:text-base"
+											>
+												Pedro Costa
+											</p>
+											<p
+												class="text-xs sm:text-sm text-gray-500"
+											>
+												142 atendimentos
+											</p>
+										</div>
+										<span
+											class="text-xs sm:text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full self-start sm:self-center"
+											>Muito Bom</span
+										>
+									</div>
+									<div
+										class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+									>
+										<div>
+											<p
+												class="font-medium text-sm sm:text-base"
+											>
+												Sandra Lima
+											</p>
+											<p
+												class="text-xs sm:text-sm text-gray-500"
+											>
+												98 atendimentos
+											</p>
+										</div>
+										<span
+											class="text-xs sm:text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full self-start sm:self-center"
+											>Bom</span
+										>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div
+							class="mt-6 sm:mt-8 bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+						>
+							<h3 class="text-base sm:text-lg font-medium mb-4">
+								Taxa de Cancelamento
+							</h3>
+							<div
+								class="flex flex-col sm:flex-row items-start sm:items-center gap-4"
+							>
+								<div class="flex-1 w-full">
+									<p
+										class="text-4xl sm:text-5xl font-bold text-gray-800"
+									>
+										8.5%
+									</p>
+									<p
+										class="text-xs sm:text-sm text-gray-500 mt-2"
+									>
+										Últimos 30 dias
+									</p>
+								</div>
+								<p class="text-xs sm:text-sm text-gray-600">
+									Meta: abaixo de 10%. Você está indo bem!
+								</p>
+							</div>
+						</div>
+					</div>
 
-        });
-    </script>
-</body>
+					<!-- Página: Configurações -->
+					<div id="configuracoes-estabelecimento" class="page">
+						<h2 class="text-2xl sm:text-3xl font-bold">
+							Configurações
+						</h2>
+						<p class="mt-1 text-sm sm:text-base text-gray-500">
+							Configure seu estabelecimento.
+						</p>
+						<div class="mt-6 sm:mt-8 space-y-4 sm:space-y-6">
+							<div
+								class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+							>
+								<h3
+									class="text-base sm:text-lg font-medium mb-4"
+								>
+									Informações do Estabelecimento
+								</h3>
+								<div class="space-y-4">
+									<div>
+										<label
+											class="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+											>Nome do Estabelecimento</label
+										>
+										<input
+											type="text"
+											value="Barbearia Estilo"
+											class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm sm:text-base"
+										/>
+									</div>
+									<div>
+										<label
+											class="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+											>Telefone</label
+										>
+										<input
+											type="tel"
+											value="(11) 98765-4321"
+											class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm sm:text-base"
+										/>
+									</div>
+									<div>
+										<label
+											class="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+											>Endereço</label
+										>
+										<input
+											type="text"
+											value="Rua das Flores, 123 - São Paulo/SP"
+											class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm sm:text-base"
+										/>
+									</div>
+								</div>
+							</div>
+							<div
+								class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+							>
+								<h3
+									class="text-base sm:text-lg font-medium mb-4"
+								>
+									Horário de Funcionamento
+								</h3>
+								<div class="space-y-3">
+									<div
+										class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4"
+									>
+										<span
+											class="text-sm sm:text-base font-medium w-32"
+											>Segunda a Sexta:</span
+										>
+										<input
+											type="time"
+											value="08:00"
+											class="px-3 py-2 border rounded-md text-sm sm:text-base"
+										/>
+										<span class="hidden sm:inline">às</span>
+										<input
+											type="time"
+											value="18:00"
+											class="px-3 py-2 border rounded-md text-sm sm:text-base"
+										/>
+									</div>
+									<div
+										class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4"
+									>
+										<span
+											class="text-sm sm:text-base font-medium w-32"
+											>Sábado:</span
+										>
+										<input
+											type="time"
+											value="08:00"
+											class="px-3 py-2 border rounded-md text-sm sm:text-base"
+										/>
+										<span class="hidden sm:inline">às</span>
+										<input
+											type="time"
+											value="14:00"
+											class="px-3 py-2 border rounded-md text-sm sm:text-base"
+										/>
+									</div>
+								</div>
+							</div>
+							<div
+								class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border"
+							>
+								<h3
+									class="text-base sm:text-lg font-medium mb-4"
+								>
+									Notificações
+								</h3>
+								<div class="space-y-3">
+									<label class="flex items-center gap-3">
+										<input
+											type="checkbox"
+											checked
+											class="w-4 h-4 sm:w-5 sm:h-5"
+										/>
+										<span class="text-sm sm:text-base"
+											>Notificar novos agendamentos</span
+										>
+									</label>
+									<label class="flex items-center gap-3">
+										<input
+											type="checkbox"
+											checked
+											class="w-4 h-4 sm:w-5 sm:h-5"
+										/>
+										<span class="text-sm sm:text-base"
+											>Lembrar agendamentos próximos</span
+										>
+									</label>
+									<label class="flex items-center gap-3">
+										<input
+											type="checkbox"
+											class="w-4 h-4 sm:w-5 sm:h-5"
+										/>
+										<span class="text-sm sm:text-base"
+											>Resumo diário por e-mail</span
+										>
+									</label>
+								</div>
+							</div>
+							<button
+								class="w-full sm:w-auto bg-gray-800 text-white font-semibold px-6 py-3 rounded-md hover:bg-gray-900 text-sm sm:text-base"
+							>
+								<i class="fas fa-save mr-2"></i>Salvar
+								Alterações
+							</button>
+						</div>
+					</div>
+
+					<!-- Página do Menu Mobile -->
+					<div id="menu-mobile" class="page">
+						<h2 class="text-2xl sm:text-3xl font-bold">Menu</h2>
+						<p class="mt-1 text-sm text-gray-500">
+							Gerencie seu estabelecimento
+						</p>
+
+						<div class="mt-6">
+							<h3
+								class="text-base sm:text-lg font-semibold text-gray-800 mb-4"
+							>
+								Ações Rápidas
+							</h3>
+							<div class="grid grid-cols-2 gap-3 sm:gap-4">
+								<button
+									onclick="quickActionNovoServico()"
+									class="bg-gray-800 text-white p-4 sm:p-5 rounded-lg shadow-sm flex flex-col items-center justify-center text-center hover:bg-gray-900 transition-colors"
+								>
+									<i
+										class="fas fa-cut text-xl sm:text-2xl mb-2"
+									></i>
+									<span class="text-xs sm:text-sm font-medium"
+										>Novo Serviço</span
+									>
+								</button>
+								<button
+									onclick="quickActionNovoProfissional()"
+									class="bg-white p-4 sm:p-5 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors"
+								>
+									<i
+										class="fas fa-user-plus text-xl sm:text-2xl mb-2 text-gray-700"
+									></i>
+									<span class="text-xs sm:text-sm font-medium"
+										>Novo Profissional</span
+									>
+								</button>
+								<a
+									href="#financeiro"
+									class="bg-green-50 p-4 sm:p-5 rounded-lg shadow-sm border border-green-200 flex flex-col items-center justify-center text-center hover:bg-green-100 transition-colors"
+								>
+									<i
+										class="fas fa-dollar-sign text-xl sm:text-2xl mb-2 text-green-700"
+									></i>
+									<span
+										class="text-xs sm:text-sm font-medium text-gray-800"
+										>Financeiro</span
+									>
+								</a>
+								<a
+									href="#relatorios"
+									class="bg-blue-50 p-4 sm:p-5 rounded-lg shadow-sm border border-blue-200 flex flex-col items-center justify-center text-center hover:bg-blue-100 transition-colors"
+								>
+									<i
+										class="fas fa-chart-bar text-xl sm:text-2xl mb-2 text-blue-700"
+									></i>
+									<span
+										class="text-xs sm:text-sm font-medium text-gray-800"
+										>Relatórios</span
+									>
+								</a>
+							</div>
+						</div>
+
+						<div class="mt-8">
+							<h3
+								class="text-base sm:text-lg font-semibold text-gray-800 mb-4"
+							>
+								Gerenciamento
+							</h3>
+							<div class="space-y-2">
+								<a
+									href="#servicos-estabelecimento"
+									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
+								>
+									<div
+										class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3"
+									>
+										<i class="fas fa-cut text-gray-600"></i>
+									</div>
+									<div class="flex-1">
+										<p
+											class="font-medium text-sm sm:text-base"
+										>
+											Serviços
+										</p>
+										<p class="text-xs text-gray-500">
+											Gerencie seus serviços
+										</p>
+									</div>
+									<i
+										class="fas fa-chevron-right text-gray-400"
+									></i>
+								</a>
+								<a
+									href="#profissionais"
+									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
+								>
+									<div
+										class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3"
+									>
+										<i
+											class="fas fa-users text-gray-600"
+										></i>
+									</div>
+									<div class="flex-1">
+										<p
+											class="font-medium text-sm sm:text-base"
+										>
+											Profissionais
+										</p>
+										<p class="text-xs text-gray-500">
+											Gerencie sua equipe
+										</p>
+									</div>
+									<i
+										class="fas fa-chevron-right text-gray-400"
+									></i>
+								</a>
+								<a
+									href="#clientes"
+									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
+								>
+									<div
+										class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3"
+									>
+										<i
+											class="fas fa-user-tag text-gray-600"
+										></i>
+									</div>
+									<div class="flex-1">
+										<p
+											class="font-medium text-sm sm:text-base"
+										>
+											Clientes
+										</p>
+										<p class="text-xs text-gray-500">
+											Visualize seus clientes
+										</p>
+									</div>
+									<i
+										class="fas fa-chevron-right text-gray-400"
+									></i>
+								</a>
+							</div>
+						</div>
+
+						<div class="mt-8">
+							<h3
+								class="text-base sm:text-lg font-semibold text-gray-800 mb-4"
+							>
+								Outros
+							</h3>
+							<div class="space-y-2">
+								<a
+									href="#configuracoes-estabelecimento"
+									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
+								>
+									<div
+										class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3"
+									>
+										<i class="fas fa-cog text-gray-600"></i>
+									</div>
+									<div class="flex-1">
+										<p
+											class="font-medium text-sm sm:text-base"
+										>
+											Configurações
+										</p>
+										<p class="text-xs text-gray-500">
+											Configure seu estabelecimento
+										</p>
+									</div>
+									<i
+										class="fas fa-chevron-right text-gray-400"
+									></i>
+								</a>
+								<a
+									href="cliente.html"
+									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
+								>
+									<div
+										class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3"
+									>
+										<i
+											class="fas fa-user text-gray-600"
+										></i>
+									</div>
+									<div class="flex-1">
+										<p
+											class="font-medium text-sm sm:text-base"
+										>
+											Área do Cliente
+										</p>
+										<p class="text-xs text-gray-500">
+											Acessar como cliente
+										</p>
+									</div>
+									<i
+										class="fas fa-chevron-right text-gray-400"
+									></i>
+								</a>
+							</div>
+						</div>
+					</div>
+				</main>
+			</div>
+		</div>
+
+		<!-- Menu de Rodapé (Visível em Mobile) -->
+		<footer
+			id="footer-nav"
+			class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around p-2 z-20"
+		>
+			<a
+				href="#dashboard"
+				data-page="dashboard"
+				class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1"
+			>
+				<i class="fas fa-chart-pie text-xl"></i>
+				<span class="text-xs mt-1">Dashboard</span>
+			</a>
+			<a
+				href="#agenda"
+				data-page="agenda"
+				class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1"
+			>
+				<i class="fas fa-calendar-alt text-xl"></i>
+				<span class="text-xs mt-1">Agenda</span>
+			</a>
+			<a
+				href="#servicos"
+				data-page="servicos"
+				class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1"
+			>
+				<i class="fas fa-concierge-bell text-xl"></i>
+				<span class="text-xs mt-1">Serviços</span>
+			</a>
+			<a
+				href="#menu-mobile"
+				data-page="menu-mobile"
+				class="footer-nav-link flex flex-col items-center text-gray-500 hover:text-gray-800 w-full pt-2 pb-1"
+			>
+				<i class="fas fa-bars text-xl"></i>
+				<span class="text-xs mt-1">Menu</span>
+			</a>
+		</footer>
+
+		<!-- Modal: Novo Serviço -->
+		<div
+			id="modal-novo-servico"
+			class="modal fixed inset-0 z-40 items-center justify-center p-4"
+		>
+			<div
+				class="modal-overlay fixed inset-0 bg-black opacity-50"
+				onclick="closeModal('modal-novo-servico')"
+			></div>
+			<div
+				class="modal-container bg-white w-full max-w-lg mx-auto rounded-lg shadow-lg z-50 overflow-y-auto max-h-[90vh]"
+			>
+				<div class="p-6">
+					<div class="flex justify-between items-center mb-6">
+						<h3
+							class="text-xl sm:text-2xl font-semibold text-gray-800"
+						>
+							Novo Serviço
+						</h3>
+						<button
+							onclick="closeModal('modal-novo-servico')"
+							class="text-gray-400 hover:text-gray-600 text-3xl leading-none"
+						>
+							&times;
+						</button>
+					</div>
+					<form onsubmit="salvarServico(event)" class="space-y-4">
+						<div>
+							<label
+								class="block text-sm font-medium text-gray-700 mb-1"
+							>
+								Nome do Serviço *
+							</label>
+							<input
+								type="text"
+								id="servico-nome"
+								required
+								placeholder="Ex: Corte Masculino"
+								class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+							/>
+						</div>
+
+						<div>
+							<label
+								class="block text-sm font-medium text-gray-700 mb-1"
+							>
+								Descrição
+							</label>
+							<textarea
+								id="servico-descricao"
+								rows="3"
+								placeholder="Descreva o serviço..."
+								class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-500 focus:border-transparent resize-none"
+							></textarea>
+						</div>
+
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+							<div>
+								<label
+									class="block text-sm font-medium text-gray-700 mb-1"
+								>
+									Duração (minutos) *
+								</label>
+								<input
+									type="number"
+									id="servico-duracao"
+									required
+									min="5"
+									step="5"
+									placeholder="45"
+									class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+								/>
+							</div>
+							<div>
+								<label
+									class="block text-sm font-medium text-gray-700 mb-1"
+								>
+									Preço (R$) *
+								</label>
+								<input
+									type="number"
+									id="servico-preco"
+									required
+									min="0"
+									step="0.01"
+									placeholder="40.00"
+									class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+								/>
+							</div>
+						</div>
+
+						<div>
+							<label
+								class="block text-sm font-medium text-gray-700 mb-1"
+							>
+								Categoria
+							</label>
+							<select
+								id="servico-categoria"
+								class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+							>
+								<option value="">
+									Selecione uma categoria
+								</option>
+								<option value="cabelo">Cabelo</option>
+								<option value="barba">Barba</option>
+								<option value="manicure">
+									Manicure/Pedicure
+								</option>
+								<option value="estetica">Estética</option>
+								<option value="combo">Combo</option>
+							</select>
+						</div>
+
+						<div>
+							<label
+								class="block text-sm font-medium text-gray-700 mb-1"
+							>
+								Ícone
+							</label>
+							<select
+								id="servico-icone"
+								class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+							>
+								<option value="fa-cut">✂️ Tesoura</option>
+								<option value="fa-scissors">✂️ Scissors</option>
+								<option value="fa-hand-sparkles">
+									✨ Mãos
+								</option>
+								<option value="fa-spa">🧖 Spa</option>
+								<option value="fa-star">⭐ Estrela</option>
+							</select>
+						</div>
+
+						<div class="flex items-center gap-2 pt-2">
+							<input
+								type="checkbox"
+								id="servico-ativo"
+								checked
+								class="w-4 h-4 text-gray-800 border-gray-300 rounded focus:ring-gray-500"
+							/>
+							<label
+								for="servico-ativo"
+								class="text-sm text-gray-700"
+							>
+								Serviço ativo e disponível para agendamento
+							</label>
+						</div>
+
+						<div
+							class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t"
+						>
+							<button
+								type="button"
+								onclick="closeModal('modal-novo-servico')"
+								class="w-full sm:w-auto px-5 py-2.5 bg-gray-200 text-gray-800 font-medium rounded-md hover:bg-gray-300 transition-colors"
+							>
+								Cancelar
+							</button>
+							<button
+								type="submit"
+								class="w-full sm:w-auto px-5 py-2.5 bg-gray-800 text-white font-medium rounded-md hover:bg-gray-900 transition-colors"
+							>
+								<i class="fas fa-save mr-2"></i>Salvar Serviço
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal: Novo Profissional -->
+		<div
+			id="modal-novo-profissional"
+			class="modal fixed inset-0 z-40 items-center justify-center"
+		>
+			<div
+				class="modal-overlay fixed inset-0 bg-black opacity-50"
+				onclick="closeModal('modal-novo-profissional')"
+			></div>
+			<div
+				class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded-lg shadow-lg z-50 overflow-y-auto"
+			>
+				<div class="p-6">
+					<div class="flex justify-between items-center">
+						<h3 class="text-2xl font-semibold">
+							Novo Profissional
+						</h3>
+						<button
+							onclick="closeModal('modal-novo-profissional')"
+							class="text-gray-500 hover:text-gray-800 text-2xl"
+						>
+							&times;
+						</button>
+					</div>
+					<div class="mt-6">
+						<form>
+							<div class="mb-4">
+								<label
+									class="block text-sm font-medium text-gray-700"
+									>Nome do Profissional</label
+								><input
+									type="text"
+									class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+								/>
+							</div>
+							<div class="mb-4">
+								<label
+									class="block text-sm font-medium text-gray-700"
+									>Telefone</label
+								><input
+									type="tel"
+									class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+								/>
+							</div>
+							<div class="mt-6 flex justify-end space-x-3">
+								<button
+									type="button"
+									onclick="closeModal('modal-novo-profissional')"
+									class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-md hover:bg-gray-300"
+								>
+									Cancelar</button
+								><button
+									type="submit"
+									class="bg-gray-800 text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900"
+								>
+									Salvar
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				const pages = document.querySelectorAll('.page');
+				const navLinks = document.querySelectorAll('.nav-link');
+				const footerNavLinks =
+					document.querySelectorAll('.footer-nav-link');
+				const footerNav = document.getElementById('footer-nav');
+
+				// --- Funções de Ação Rápida (Mobile) ---
+				window.quickActionNovoServico = () => {
+					window.location.hash = '#servicos-estabelecimento';
+					setTimeout(() => openModal('modal-novo-servico'), 50);
+				};
+				window.quickActionNovoProfissional = () => {
+					window.location.hash = '#profissionais';
+					setTimeout(() => openModal('modal-novo-profissional'), 50);
+				};
+
+				// --- Lógica de Navegação (SPA) ---
+				function showPage(pageId) {
+					pages.forEach((page) => {
+						page.style.display = 'none';
+					});
+					const activePage = document.getElementById(pageId);
+					if (activePage) {
+						activePage.style.display = 'block';
+					}
+
+					// Ocultar footer no menu-mobile apenas em mobile
+					if (pageId === 'menu-mobile' && footerNav) {
+						footerNav.classList.add('hidden');
+					} else if (footerNav) {
+						footerNav.classList.remove('hidden');
+					}
+
+					navLinks.forEach((link) => {
+						link.classList.remove('active-nav');
+						link.classList.remove('text-white', 'bg-gray-800');
+						link.classList.add(
+							'text-gray-600',
+							'hover:bg-gray-50',
+							'hover:text-gray-900'
+						);
+						if (link.getAttribute('href') === '#' + pageId) {
+							link.classList.add('active-nav');
+						}
+					});
+
+					footerNavLinks.forEach((link) => {
+						link.classList.remove('active');
+						if (link.dataset.page === pageId) {
+							link.classList.add('active');
+						}
+					});
+				}
+
+				function handleNavigation() {
+					let pageId =
+						window.location.hash.substring(1) || 'dashboard';
+					showPage(pageId);
+					if (pageId === 'dashboard') {
+						// Aguardar o DOM ser atualizado antes de renderizar o gráfico
+						setTimeout(() => {
+							renderChart();
+						}, 100);
+					}
+				}
+
+				window.addEventListener('hashchange', handleNavigation);
+				handleNavigation();
+
+				// --- Lógica de Modals e Gráfico ---
+				let revenueChartInstance = null;
+				function renderChart() {
+					const ctx = document.getElementById('revenueChart');
+					if (!ctx) {
+						console.log('Canvas não encontrado');
+						return;
+					}
+
+					// Destruir instância anterior se existir
+					if (revenueChartInstance) {
+						revenueChartInstance.destroy();
+					}
+
+					// Criar novo gráfico
+					try {
+						revenueChartInstance = new Chart(ctx, {
+							type: 'bar',
+							data: {
+								labels: [
+									'Jul',
+									'Ago',
+									'Set',
+									'Out',
+									'Nov',
+									'Dez',
+								],
+								datasets: [
+									{
+										label: 'Faturamento (R$)',
+										data: [
+											5200, 6800, 7100, 8250, 9500, 12000,
+										],
+										backgroundColor:
+											'rgba(31, 41, 55, 0.8)',
+										borderColor: 'rgba(31, 41, 55, 1)',
+										borderWidth: 1,
+									},
+								],
+							},
+							options: {
+								responsive: true,
+								maintainAspectRatio: true,
+								plugins: {
+									legend: {
+										display: true,
+										position: 'top',
+									},
+								},
+								scales: {
+									y: {
+										beginAtZero: true,
+										ticks: {
+											callback: function (value) {
+												return (
+													'R$ ' +
+													value.toLocaleString(
+														'pt-BR'
+													)
+												);
+											},
+										},
+									},
+								},
+							},
+						});
+						console.log('Gráfico renderizado com sucesso');
+					} catch (error) {
+						console.error('Erro ao renderizar gráfico:', error);
+					}
+				}
+
+				// --- Funções de Modals ---
+				window.openModal = (modalId) => {
+					const modal = document.getElementById(modalId);
+					if (modal) modal.style.display = 'flex';
+				};
+				window.closeModal = (modalId) => {
+					const modal = document.getElementById(modalId);
+					if (modal) modal.style.display = 'none';
+				};
+
+				// --- Funções de Gerenciamento de Serviços ---
+				window.salvarServico = (event) => {
+					event.preventDefault();
+					const nome = document.getElementById('servico-nome').value;
+					const descricao =
+						document.getElementById('servico-descricao').value;
+					const duracao =
+						document.getElementById('servico-duracao').value;
+					const preco =
+						document.getElementById('servico-preco').value;
+					const categoria =
+						document.getElementById('servico-categoria').value;
+					const icone =
+						document.getElementById('servico-icone').value;
+					const ativo =
+						document.getElementById('servico-ativo').checked;
+
+					console.log('Novo Serviço:', {
+						nome,
+						descricao,
+						duracao,
+						preco,
+						categoria,
+						icone,
+						ativo,
+					});
+
+					// Aqui você integraria com backend
+					alert(
+						`Serviço "${nome}" cadastrado com sucesso!\n\nEm produção, este serviço seria salvo no banco de dados.`
+					);
+					closeModal('modal-novo-servico');
+
+					// Limpar formulário
+					event.target.reset();
+				};
+
+				window.editarServico = (servicoId) => {
+					console.log('Editar serviço:', servicoId);
+					alert(
+						`Funcionalidade de edição do serviço "${servicoId}" será implementada.\n\nEm produção, abriria um modal com os dados do serviço para edição.`
+					);
+				};
+
+				window.excluirServico = (servicoId) => {
+					if (
+						confirm('Tem certeza que deseja excluir este serviço?')
+					) {
+						console.log('Excluir serviço:', servicoId);
+						alert(
+							`Serviço "${servicoId}" excluído com sucesso!\n\nEm produção, este serviço seria removido do banco de dados.`
+						);
+					}
+				};
+			});
+		</script>
+	</body>
 </html>
-
