@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Agende Fácil - Estabelecimento</title>
+		<title>AgendaAi - Estabelecimento</title>
 		<!-- Tailwind CSS -->
 		<script src="https://cdn.tailwindcss.com"></script>
 		<!-- Font Awesome para ícones -->
@@ -51,6 +51,7 @@
 			.nav-link {
 				color: #4b5563;
 				transition: all 0.2s;
+				position: relative;
 			}
 			.nav-link:hover:not(.active-nav) {
 				background-color: #f3f4f6;
@@ -65,6 +66,124 @@
 			.modal-overlay {
 				background-color: rgba(0, 0, 0, 0.5);
 			}
+
+			/* Sidebar colapsada */
+			#sidebar.collapsed {
+				width: 4rem;
+			}
+			@media (min-width: 768px) {
+				#sidebar.collapsed ~ #main-content {
+					margin-left: 4rem;
+				}
+			}
+			#sidebar.collapsed .sidebar-title,
+			#sidebar.collapsed .nav-link-text,
+			#sidebar.collapsed .nav-section-title {
+				display: none;
+			}
+			#sidebar.collapsed .sidebar-logo-full {
+				display: none;
+			}
+			#sidebar.collapsed .sidebar-logo-icon {
+				display: flex !important;
+				width: 3rem;
+				height: 3rem;
+			}
+			#sidebar.collapsed .nav-link {
+				justify-content: center;
+				padding: 0.75rem;
+			}
+			#sidebar.collapsed .nav-link i {
+				margin-right: 0;
+			}
+			#sidebar.collapsed .nav-section-separator {
+				display: block;
+			}
+			.nav-section-separator {
+				display: none;
+				width: 2rem;
+				height: 1px;
+				background-color: #e5e7eb;
+				margin: 1rem auto;
+			}
+
+			/* Tooltip para sidebar colapsada */
+			.nav-link {
+				position: relative;
+			}
+			.nav-link-tooltip {
+				position: fixed;
+				left: calc(4rem + 0.5rem); /* Logo após a sidebar colapsada */
+				padding: 0.5rem 0.75rem;
+				background-color: #1f2937;
+				color: white;
+				border-radius: 0.375rem;
+				font-size: 0.875rem;
+				white-space: nowrap;
+				opacity: 0;
+				pointer-events: none;
+				transition: opacity 0.15s;
+				z-index: 9999;
+				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+			}
+			#sidebar.collapsed .nav-link:hover .nav-link-tooltip {
+				opacity: 1;
+			}
+			#sidebar:not(.collapsed) .nav-link-tooltip {
+				display: none;
+			}
+
+			/* Botão de toggle - posicionado sobre a borda da sidebar */
+			#sidebar-toggle-container {
+				position: fixed;
+				left: 16rem; /* Largura da sidebar (256px = 16rem) */
+				top: 4.5rem; /* Alinhado com a linha inferior da logo */
+				transform: translateX(-50%);
+				z-index: 50;
+			}
+			#sidebar.collapsed ~ #main-content #sidebar-toggle-container {
+				left: 4rem; /* Largura da sidebar colapsada (64px = 4rem) */
+			}
+			#sidebar-toggle {
+				width: 1.75rem;
+				height: 1.75rem;
+				transition: all 0.3s;
+				background-color: white;
+				border: 2px solid #e5e7eb;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			#sidebar-toggle:hover {
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+			}
+			#sidebar-toggle i {
+				font-size: 0.75rem;
+			}
+			#sidebar-toggle i {
+				transition: transform 0.3s;
+			}
+			#sidebar.collapsed ~ #main-content #sidebar-toggle i {
+				transform: rotate(180deg);
+			}
+
+			/* Logo da sidebar */
+			.sidebar-logo-icon {
+				display: none;
+			}
+			.sidebar-logo-full {
+				display: flex;
+			}
+
+			/* Esconder scrollbar mas manter funcionalidade */
+			.scrollbar-hide {
+				-ms-overflow-style: none; /* IE e Edge */
+				scrollbar-width: none; /* Firefox */
+			}
+			.scrollbar-hide::-webkit-scrollbar {
+				display: none; /* Chrome, Safari e Opera */
+			}
 		</style>
 	</head>
 	<body class="bg-gray-100 text-gray-800">
@@ -72,19 +191,40 @@
 			<!-- Barra de Navegação Lateral (Visível apenas em Desktop) -->
 			<aside
 				id="sidebar"
-				class="hidden md:flex w-64 bg-white border-r border-gray-200 flex-col transition-all duration-300"
+				class="hidden md:flex w-64 bg-white border-r border-gray-200 flex-col transition-all duration-300 fixed left-0 top-0 bottom-0 z-40"
 			>
-				<div class="p-6 flex justify-between items-center">
-					<h1 class="text-2xl font-bold text-gray-800">
-						Agende Fácil
-					</h1>
+				<div
+					class="p-4 flex items-center justify-center border-b border-gray-200"
+				>
+					<!-- Logo quando expandida -->
+					<div class="sidebar-logo-full items-center gap-3">
+						<div
+							class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center shadow-md"
+						>
+							<i
+								class="fas fa-calendar-alt text-white text-xl"
+							></i>
+						</div>
+						<h1
+							class="text-2xl font-bold text-gray-800 sidebar-title"
+						>
+							AgendaAi
+						</h1>
+					</div>
+					<!-- Logo quando colapsada (apenas ícone) -->
+					<div
+						class="sidebar-logo-icon  bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg items-center justify-center shadow-md"
+					>
+						<i class="fas fa-calendar-alt text-white "></i>
+					</div>
 				</div>
-				<nav class="mt-6 px-3 flex-1 overflow-y-auto">
+				<nav class="px-3 flex-1 overflow-y-auto scrollbar-hide">
 					<h2
-						class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+						class="nav-section-title px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-4"
 					>
 						Principal
 					</h2>
+					<div class="nav-section-separator"></div>
 					<div class="mt-2 space-y-1">
 						<a
 							href="#dashboard"
@@ -93,7 +233,8 @@
 							<i
 								class="fas fa-chart-pie mr-3 w-5 text-center"
 							></i>
-							Dashboard
+							<span class="nav-link-text">Dashboard</span>
+							<span class="nav-link-tooltip">Dashboard</span>
 						</a>
 						<a
 							href="#agenda"
@@ -102,22 +243,25 @@
 							<i
 								class="fas fa-calendar-alt mr-3 w-5 text-center"
 							></i>
-							Agenda
+							<span class="nav-link-text">Agenda</span>
+							<span class="nav-link-tooltip">Agenda</span>
 						</a>
 						<a
 							href="#historico-agendamentos"
 							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
 						>
 							<i class="fas fa-history mr-3 w-5 text-center"></i>
-							Histórico
+							<span class="nav-link-text">Histórico</span>
+							<span class="nav-link-tooltip">Histórico</span>
 						</a>
 					</div>
 
 					<h2
-						class="mt-8 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+						class="nav-section-title mt-8 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
 					>
 						Gerenciamento
 					</h2>
+					<div class="nav-section-separator"></div>
 					<div class="mt-2 space-y-1">
 						<a
 							href="#servicos-estabelecimento"
@@ -126,29 +270,47 @@
 							<i
 								class="fas fa-concierge-bell mr-3 w-5 text-center"
 							></i>
-							Serviços
+							<span class="nav-link-text">Serviços</span>
+							<span class="nav-link-tooltip">Serviços</span>
 						</a>
 						<a
 							href="#profissionais"
 							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
 						>
 							<i class="fas fa-users mr-3 w-5 text-center"></i>
-							Profissionais
+							<span class="nav-link-text">Profissionais</span>
+							<span class="nav-link-tooltip">Profissionais</span>
 						</a>
 						<a
 							href="#clientes"
 							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
 						>
 							<i class="fas fa-user-tag mr-3 w-5 text-center"></i>
-							Clientes
+							<span class="nav-link-text">Clientes</span>
+							<span class="nav-link-tooltip">Clientes</span>
+						</a>
+						<a
+							href="#config-estabelecimento"
+							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+						>
+							<i
+								class="fas fa-store-alt mr-3 w-5 text-center"
+							></i>
+							<span class="nav-link-text"
+								>Config. Estabelecimento</span
+							>
+							<span class="nav-link-tooltip"
+								>Config. Estabelecimento</span
+							>
 						</a>
 					</div>
 
 					<h2
-						class="mt-8 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+						class="nav-section-title mt-8 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
 					>
 						Financeiro
 					</h2>
+					<div class="nav-section-separator"></div>
 					<div class="mt-2 space-y-1">
 						<a
 							href="#financeiro"
@@ -157,7 +319,8 @@
 							<i
 								class="fas fa-dollar-sign mr-3 w-5 text-center"
 							></i>
-							Ganhos
+							<span class="nav-link-text">Ganhos</span>
+							<span class="nav-link-tooltip">Ganhos</span>
 						</a>
 						<a
 							href="#relatorios"
@@ -166,35 +329,67 @@
 							<i
 								class="fas fa-chart-bar mr-3 w-5 text-center"
 							></i>
-							Relatórios
+							<span class="nav-link-text">Relatórios</span>
+							<span class="nav-link-tooltip">Relatórios</span>
 						</a>
 					</div>
 
 					<h2
-						class="mt-8 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+						class="nav-section-title mt-8 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
 					>
 						Outros
 					</h2>
+					<div class="nav-section-separator"></div>
 					<div class="mt-2 space-y-1">
 						<a
 							href="#configuracoes-estabelecimento"
 							class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md"
 						>
 							<i class="fas fa-cog mr-3 w-5 text-center"></i>
-							Configurações
+							<span class="nav-link-text">Configurações</span>
+							<span class="nav-link-tooltip">Configurações</span>
 						</a>
 					</div>
 				</nav>
 			</aside>
 
 			<!-- Conteúdo Principal -->
-			<div class="flex-1 flex flex-col">
+			<div
+				class="flex-1 flex flex-col relative transition-all duration-300 md:ml-64"
+				id="main-content"
+			>
+				<!-- Botão de toggle posicionado sobre a borda da sidebar -->
+				<div id="sidebar-toggle-container" class="hidden md:block">
+					<button
+						id="sidebar-toggle"
+						class="text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-all"
+						onclick="toggleSidebar()"
+						title="Expandir/Recolher menu"
+					>
+						<i class="fas fa-chevron-left"></i>
+					</button>
+				</div>
+
 				<header
-					class="bg-white border-b border-gray-200 p-4 flex justify-between items-center z-10"
+					class="bg-white border-b border-gray-200 p-4 flex justify-between items-center z-10 relative"
 				>
-					<h1 class="text-lg sm:text-xl font-bold text-gray-800">
-						Agende Fácil
-					</h1>
+					<div class="flex items-center gap-4">
+						<!-- Logo completa no mobile, apenas texto no desktop -->
+						<div class="flex items-center gap-2">
+							<div
+								class="md:hidden w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center shadow-md"
+							>
+								<i
+									class="fas fa-calendar-alt text-white text-sm"
+								></i>
+							</div>
+							<h1
+								class="text-lg sm:text-xl font-bold text-gray-800"
+							>
+								AgendaAi
+							</h1>
+						</div>
+					</div>
 					<a
 						href="cliente.html"
 						class="hidden md:block text-sm text-gray-600 hover:text-gray-800"
@@ -2005,6 +2200,1242 @@
 						</div>
 					</div>
 
+					<!-- Página: Configuração do Estabelecimento -->
+					<div id="config-estabelecimento" class="page">
+						<h2 class="text-2xl sm:text-3xl font-bold">
+							Configuração do Estabelecimento
+						</h2>
+						<p class="mt-1 text-sm sm:text-base text-gray-500">
+							Gerencie horários de funcionamento, feriados e
+							bloqueios de agenda.
+						</p>
+
+						<!-- Horário de Funcionamento -->
+						<div
+							class="mt-6 sm:mt-8 bg-white rounded-lg shadow-sm border border-gray-200"
+						>
+							<div class="p-4 sm:p-6 border-b bg-gray-50">
+								<h3 class="text-lg font-semibold text-gray-800">
+									<i
+										class="fas fa-clock mr-2 text-gray-600"
+									></i>
+									Horário de Funcionamento
+								</h3>
+								<p
+									class="text-xs sm:text-sm text-gray-500 mt-1"
+								>
+									Defina os dias e horários em que seu
+									estabelecimento funciona
+								</p>
+							</div>
+							<div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
+								<!-- Padrão de Funcionamento -->
+								<div>
+									<label
+										class="block text-sm font-medium text-gray-700 mb-3"
+										>Padrão de Funcionamento</label
+									>
+									<div
+										class="grid grid-cols-1 sm:grid-cols-3 gap-3"
+									>
+										<button
+											onclick="setWorkPattern('seg-sex')"
+											id="pattern-seg-sex"
+											class="work-pattern-btn border-2 border-gray-300 rounded-lg p-3 sm:p-4 hover:border-gray-800 transition-colors text-center"
+										>
+											<i
+												class="fas fa-briefcase text-xl sm:text-2xl text-gray-600 mb-2"
+											></i>
+											<p
+												class="font-medium text-sm sm:text-base"
+											>
+												Segunda a Sexta
+											</p>
+											<p class="text-xs text-gray-500">
+												Dias úteis
+											</p>
+										</button>
+										<button
+											onclick="setWorkPattern('seg-sab')"
+											id="pattern-seg-sab"
+											class="work-pattern-btn border-2 border-gray-300 rounded-lg p-3 sm:p-4 hover:border-gray-800 transition-colors text-center"
+										>
+											<i
+												class="fas fa-calendar-week text-xl sm:text-2xl text-gray-600 mb-2"
+											></i>
+											<p
+												class="font-medium text-sm sm:text-base"
+											>
+												Segunda a Sábado
+											</p>
+											<p class="text-xs text-gray-500">
+												Com sábado
+											</p>
+										</button>
+										<button
+											onclick="setWorkPattern('seg-dom')"
+											id="pattern-seg-dom"
+											class="work-pattern-btn border-2 border-gray-800 bg-gray-50 rounded-lg p-3 sm:p-4 hover:border-gray-800 transition-colors text-center"
+										>
+											<i
+												class="fas fa-calendar text-xl sm:text-2xl text-gray-800 mb-2"
+											></i>
+											<p
+												class="font-medium text-sm sm:text-base"
+											>
+												Segunda a Domingo
+											</p>
+											<p class="text-xs text-gray-500">
+												Todos os dias
+											</p>
+										</button>
+									</div>
+								</div>
+
+								<!-- Dias da Semana -->
+								<div class="pt-4 border-t">
+									<label
+										class="block text-sm font-medium text-gray-700 mb-3"
+										>Dias de Funcionamento
+										(Personalizado)</label
+									>
+									<div
+										class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-3"
+									>
+										<div
+											class="flex items-center justify-between p-2 sm:p-3 border rounded-lg"
+										>
+											<label
+												for="dom"
+												class="cursor-pointer flex-1 text-sm sm:text-base"
+											>
+												<span class="font-medium"
+													>Dom</span
+												>
+											</label>
+											<input
+												type="checkbox"
+												id="dom"
+												class="w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+												onchange="updateWorkDays()"
+											/>
+										</div>
+										<div
+											class="flex items-center justify-between p-2 sm:p-3 border rounded-lg"
+										>
+											<label
+												for="seg"
+												class="cursor-pointer flex-1 text-sm sm:text-base"
+											>
+												<span class="font-medium"
+													>Seg</span
+												>
+											</label>
+											<input
+												type="checkbox"
+												id="seg"
+												class="w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+												checked
+												onchange="updateWorkDays()"
+											/>
+										</div>
+										<div
+											class="flex items-center justify-between p-2 sm:p-3 border rounded-lg"
+										>
+											<label
+												for="ter"
+												class="cursor-pointer flex-1 text-sm sm:text-base"
+											>
+												<span class="font-medium"
+													>Ter</span
+												>
+											</label>
+											<input
+												type="checkbox"
+												id="ter"
+												class="w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+												checked
+												onchange="updateWorkDays()"
+											/>
+										</div>
+										<div
+											class="flex items-center justify-between p-2 sm:p-3 border rounded-lg"
+										>
+											<label
+												for="qua"
+												class="cursor-pointer flex-1 text-sm sm:text-base"
+											>
+												<span class="font-medium"
+													>Qua</span
+												>
+											</label>
+											<input
+												type="checkbox"
+												id="qua"
+												class="w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+												checked
+												onchange="updateWorkDays()"
+											/>
+										</div>
+										<div
+											class="flex items-center justify-between p-2 sm:p-3 border rounded-lg"
+										>
+											<label
+												for="qui"
+												class="cursor-pointer flex-1 text-sm sm:text-base"
+											>
+												<span class="font-medium"
+													>Qui</span
+												>
+											</label>
+											<input
+												type="checkbox"
+												id="qui"
+												class="w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+												checked
+												onchange="updateWorkDays()"
+											/>
+										</div>
+										<div
+											class="flex items-center justify-between p-2 sm:p-3 border rounded-lg"
+										>
+											<label
+												for="sex"
+												class="cursor-pointer flex-1 text-sm sm:text-base"
+											>
+												<span class="font-medium"
+													>Sex</span
+												>
+											</label>
+											<input
+												type="checkbox"
+												id="sex"
+												class="w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+												checked
+												onchange="updateWorkDays()"
+											/>
+										</div>
+										<div
+											class="flex items-center justify-between p-2 sm:p-3 border rounded-lg"
+										>
+											<label
+												for="sab"
+												class="cursor-pointer flex-1 text-sm sm:text-base"
+											>
+												<span class="font-medium"
+													>Sáb</span
+												>
+											</label>
+											<input
+												type="checkbox"
+												id="sab"
+												class="w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+												checked
+												onchange="updateWorkDays()"
+											/>
+										</div>
+									</div>
+								</div>
+
+								<!-- Horários Padrão do Estabelecimento -->
+								<div class="pt-4 border-t">
+									<label
+										class="block text-sm font-medium text-gray-700 mb-3"
+										>Horário de Atendimento Padrão</label
+									>
+									<div
+										class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
+									>
+										<div>
+											<label
+												class="block text-xs text-gray-600 mb-1"
+												>Abertura</label
+											>
+											<input
+												type="time"
+												id="horario-abertura"
+												value="08:00"
+												class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+											/>
+										</div>
+										<div>
+											<label
+												class="block text-xs text-gray-600 mb-1"
+												>Fechamento</label
+											>
+											<input
+												type="time"
+												id="horario-fechamento"
+												value="18:00"
+												class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+											/>
+										</div>
+									</div>
+									<div class="mt-3 flex items-center">
+										<input
+											type="checkbox"
+											id="intervalo"
+											class="w-4 h-4 text-gray-800 rounded focus:ring-gray-800"
+											onchange="toggleIntervalo()"
+										/>
+										<label
+											for="intervalo"
+											class="ml-2 text-sm text-gray-700"
+											>Possui intervalo para almoço</label
+										>
+									</div>
+									<div
+										id="intervalo-horario"
+										class="hidden mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pl-4 sm:pl-6 border-l-2"
+									>
+										<div>
+											<label
+												class="block text-xs text-gray-600 mb-1"
+												>Início do intervalo</label
+											>
+											<input
+												type="time"
+												value="12:00"
+												class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+											/>
+										</div>
+										<div>
+											<label
+												class="block text-xs text-gray-600 mb-1"
+												>Fim do intervalo</label
+											>
+											<input
+												type="time"
+												value="13:00"
+												class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+											/>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Horários por Profissional -->
+						<div
+							class="mt-4 sm:mt-6 bg-white rounded-lg shadow-sm border border-gray-200"
+						>
+							<div class="p-4 sm:p-6 border-b bg-gray-50">
+								<div class="flex items-center justify-between">
+									<div>
+										<h3
+											class="text-lg font-semibold text-gray-800"
+										>
+											<i
+												class="fas fa-user-clock mr-2 text-gray-600"
+											></i>
+											Horários por Profissional
+										</h3>
+										<p
+											class="text-xs sm:text-sm text-gray-500 mt-1"
+										>
+											Configure horários individuais para
+											cada profissional (opcional)
+										</p>
+									</div>
+									<label
+										class="flex items-center cursor-pointer"
+									>
+										<input
+											type="checkbox"
+											id="horarios-individuais"
+											class="w-5 h-5 text-gray-800 rounded focus:ring-gray-800"
+											onchange="toggleHorariosIndividuais()"
+										/>
+										<span
+											class="ml-2 text-sm font-medium text-gray-700"
+											>Ativar</span
+										>
+									</label>
+								</div>
+							</div>
+							<div
+								id="horarios-profissionais-container"
+								class="hidden p-4 sm:p-6"
+							>
+								<div class="space-y-4">
+									<!-- Profissional 1 -->
+									<div
+										class="border rounded-lg p-4 bg-gray-50"
+									>
+										<div
+											class="flex items-center justify-between mb-4"
+										>
+											<div
+												class="flex items-center gap-3"
+											>
+												<div
+													class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center"
+												>
+													<i
+														class="fas fa-user text-gray-600"
+													></i>
+												</div>
+												<div>
+													<h4
+														class="font-semibold text-gray-800"
+													>
+														João Silva
+													</h4>
+													<p
+														class="text-xs text-gray-500"
+													>
+														Barbeiro
+													</p>
+												</div>
+											</div>
+										</div>
+										<div
+											class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+										>
+											<div>
+												<label
+													class="block text-xs text-gray-600 mb-1"
+													>Horário de Entrada</label
+												>
+												<input
+													type="time"
+													value="09:00"
+													class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+												/>
+											</div>
+											<div>
+												<label
+													class="block text-xs text-gray-600 mb-1"
+													>Horário de Saída</label
+												>
+												<input
+													type="time"
+													value="17:00"
+													class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+												/>
+											</div>
+										</div>
+										<div class="mt-3">
+											<label
+												class="block text-xs text-gray-600 mb-2"
+												>Dias de Trabalho</label
+											>
+											<div class="flex flex-wrap gap-2">
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														checked
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Seg</span>
+												</label>
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														checked
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Ter</span>
+												</label>
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														checked
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Qua</span>
+												</label>
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														checked
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Qui</span>
+												</label>
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														checked
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Sex</span>
+												</label>
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Sáb</span>
+												</label>
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Dom</span>
+												</label>
+											</div>
+										</div>
+									</div>
+
+									<!-- Profissional 2 -->
+									<div
+										class="border rounded-lg p-4 bg-gray-50"
+									>
+										<div
+											class="flex items-center justify-between mb-4"
+										>
+											<div
+												class="flex items-center gap-3"
+											>
+												<div
+													class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center"
+												>
+													<i
+														class="fas fa-user text-gray-600"
+													></i>
+												</div>
+												<div>
+													<h4
+														class="font-semibold text-gray-800"
+													>
+														Maria Santos
+													</h4>
+													<p
+														class="text-xs text-gray-500"
+													>
+														Cabeleireira
+													</p>
+												</div>
+											</div>
+										</div>
+										<div
+											class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+										>
+											<div>
+												<label
+													class="block text-xs text-gray-600 mb-1"
+													>Horário de Entrada</label
+												>
+												<input
+													type="time"
+													value="08:00"
+													class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+												/>
+											</div>
+											<div>
+												<label
+													class="block text-xs text-gray-600 mb-1"
+													>Horário de Saída</label
+												>
+												<input
+													type="time"
+													value="18:00"
+													class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+												/>
+											</div>
+										</div>
+										<div class="mt-3">
+											<label
+												class="block text-xs text-gray-600 mb-2"
+												>Dias de Trabalho</label
+											>
+											<div class="flex flex-wrap gap-2">
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Seg</span>
+												</label>
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														checked
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Ter</span>
+												</label>
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														checked
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Qua</span>
+												</label>
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														checked
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Qui</span>
+												</label>
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														checked
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Sex</span>
+												</label>
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														checked
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Sáb</span>
+												</label>
+												<label
+													class="flex items-center gap-1 text-sm"
+												>
+													<input
+														type="checkbox"
+														class="w-4 h-4 text-gray-800 rounded"
+													/>
+													<span>Dom</span>
+												</label>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"
+								>
+									<div class="flex items-start gap-2">
+										<i
+											class="fas fa-info-circle text-blue-600 mt-1"
+										></i>
+										<div class="text-sm text-blue-800">
+											<p class="font-medium">Dica:</p>
+											<p class="mt-1">
+												Se todos os profissionais
+												trabalham no mesmo horário,
+												deixe esta opção desativada e
+												use apenas o horário padrão do
+												estabelecimento.
+											</p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Feriados -->
+						<div
+							class="mt-4 sm:mt-6 bg-white rounded-lg shadow-sm border border-gray-200"
+						>
+							<div class="p-4 sm:p-6 border-b bg-gray-50">
+								<h3 class="text-lg font-semibold text-gray-800">
+									<i
+										class="fas fa-umbrella-beach mr-2 text-gray-600"
+									></i>
+									Funcionamento em Feriados
+								</h3>
+								<p
+									class="text-xs sm:text-sm text-gray-500 mt-1"
+								>
+									Configure o funcionamento do estabelecimento
+									em feriados
+								</p>
+							</div>
+							<div class="p-4 sm:p-6">
+								<div class="flex items-start space-x-3">
+									<input
+										type="checkbox"
+										id="feriados-nacionais"
+										class="mt-1 w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+									/>
+									<div class="flex-1">
+										<label
+											for="feriados-nacionais"
+											class="block font-medium text-gray-700 cursor-pointer text-sm sm:text-base"
+										>
+											Fechar em feriados nacionais
+										</label>
+										<p
+											class="text-xs sm:text-sm text-gray-500 mt-1"
+										>
+											O estabelecimento não funcionará em
+											feriados nacionais (Ano Novo,
+											Carnaval, Páscoa, etc.)
+										</p>
+									</div>
+								</div>
+								<div class="mt-4 flex items-start space-x-3">
+									<input
+										type="checkbox"
+										id="feriados-locais"
+										class="mt-1 w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+									/>
+									<div class="flex-1">
+										<label
+											for="feriados-locais"
+											class="block font-medium text-gray-700 cursor-pointer text-sm sm:text-base"
+										>
+											Fechar em feriados municipais
+										</label>
+										<p
+											class="text-xs sm:text-sm text-gray-500 mt-1"
+										>
+											Inclui feriados específicos da sua
+											cidade
+										</p>
+									</div>
+								</div>
+								<div class="mt-6 pt-6 border-t">
+									<h4
+										class="font-medium text-gray-700 mb-3 text-sm sm:text-base"
+									>
+										Feriados Personalizados
+									</h4>
+									<div
+										class="space-y-2"
+										id="custom-holidays-list"
+									>
+										<div
+											class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+										>
+											<div>
+												<p
+													class="font-medium text-gray-800 text-sm sm:text-base"
+												>
+													Aniversário da Cidade
+												</p>
+												<p
+													class="text-xs sm:text-sm text-gray-500"
+												>
+													15 de Agosto
+												</p>
+											</div>
+											<button
+												class="text-red-600 hover:text-red-800"
+											>
+												<i class="fas fa-trash"></i>
+											</button>
+										</div>
+									</div>
+									<button
+										onclick="openAddHolidayModal()"
+										class="mt-3 w-full border-2 border-dashed border-gray-300 rounded-lg p-3 text-gray-600 hover:border-gray-400 hover:text-gray-800 transition-colors text-sm sm:text-base"
+									>
+										<i class="fas fa-plus mr-2"></i
+										>Adicionar Feriado Personalizado
+									</button>
+								</div>
+							</div>
+						</div>
+
+						<!-- Bloqueio de Datas -->
+						<div
+							class="mt-4 sm:mt-6 bg-white rounded-lg shadow-sm border border-gray-200"
+						>
+							<div class="p-4 sm:p-6 border-b bg-gray-50">
+								<h3 class="text-lg font-semibold text-gray-800">
+									<i
+										class="fas fa-ban mr-2 text-gray-600"
+									></i>
+									Bloqueio de Agenda
+								</h3>
+								<p
+									class="text-xs sm:text-sm text-gray-500 mt-1"
+								>
+									Bloqueie datas específicas para não receber
+									agendamentos
+								</p>
+							</div>
+							<div class="p-4 sm:p-6">
+								<!-- Calendário para bloqueio -->
+								<div
+									class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6"
+								>
+									<div>
+										<h4
+											class="font-medium text-gray-700 mb-3 text-sm sm:text-base"
+										>
+											Selecione as datas
+										</h4>
+										<div
+											class="border rounded-lg p-3 sm:p-4"
+										>
+											<div
+												class="flex items-center justify-between mb-4"
+											>
+												<button
+													onclick="previousBlockMonth()"
+													class="p-2 hover:bg-gray-100 rounded"
+												>
+													<i
+														class="fas fa-chevron-left"
+													></i>
+												</button>
+												<div class="flex gap-2">
+													<select
+														id="block-month"
+														onchange="updateBlockCalendar()"
+														class="border rounded px-2 py-1 text-xs sm:text-sm"
+													>
+														<option value="0">
+															Janeiro
+														</option>
+														<option value="1">
+															Fevereiro
+														</option>
+														<option value="2">
+															Março
+														</option>
+														<option value="3">
+															Abril
+														</option>
+														<option value="4">
+															Maio
+														</option>
+														<option value="5">
+															Junho
+														</option>
+														<option value="6">
+															Julho
+														</option>
+														<option value="7">
+															Agosto
+														</option>
+														<option value="8">
+															Setembro
+														</option>
+														<option
+															value="9"
+															selected
+														>
+															Outubro
+														</option>
+														<option value="10">
+															Novembro
+														</option>
+														<option value="11">
+															Dezembro
+														</option>
+													</select>
+													<select
+														id="block-year"
+														onchange="updateBlockCalendar()"
+														class="border rounded px-2 py-1 text-xs sm:text-sm"
+													>
+														<option value="2024">
+															2024
+														</option>
+														<option
+															value="2025"
+															selected
+														>
+															2025
+														</option>
+														<option value="2026">
+															2026
+														</option>
+													</select>
+												</div>
+												<button
+													onclick="nextBlockMonth()"
+													class="p-2 hover:bg-gray-100 rounded"
+												>
+													<i
+														class="fas fa-chevron-right"
+													></i>
+												</button>
+											</div>
+											<div
+												class="grid grid-cols-7 gap-1 text-center text-xs sm:text-sm"
+											>
+												<div
+													class="font-semibold text-gray-600 py-2"
+												>
+													Dom
+												</div>
+												<div
+													class="font-semibold text-gray-600 py-2"
+												>
+													Seg
+												</div>
+												<div
+													class="font-semibold text-gray-600 py-2"
+												>
+													Ter
+												</div>
+												<div
+													class="font-semibold text-gray-600 py-2"
+												>
+													Qua
+												</div>
+												<div
+													class="font-semibold text-gray-600 py-2"
+												>
+													Qui
+												</div>
+												<div
+													class="font-semibold text-gray-600 py-2"
+												>
+													Sex
+												</div>
+												<div
+													class="font-semibold text-gray-600 py-2"
+												>
+													Sáb
+												</div>
+												<div
+													id="block-calendar-days"
+													class="col-span-7 grid grid-cols-7 gap-1"
+												>
+													<!-- Dias serão inseridos via JavaScript -->
+												</div>
+											</div>
+										</div>
+										<div
+											class="mt-4 flex gap-3 sm:gap-4 flex-wrap"
+										>
+											<div
+												class="flex items-center gap-2"
+											>
+												<div
+													class="w-4 h-4 bg-red-100 border-2 border-red-500 rounded"
+												></div>
+												<span
+													class="text-xs text-gray-600"
+													>Bloqueado</span
+												>
+											</div>
+											<div
+												class="flex items-center gap-2"
+											>
+												<div
+													class="w-4 h-4 bg-gray-100 rounded"
+												></div>
+												<span
+													class="text-xs text-gray-600"
+													>Disponível</span
+												>
+											</div>
+										</div>
+									</div>
+									<div>
+										<h4
+											class="font-medium text-gray-700 mb-3 text-sm sm:text-base"
+										>
+											Datas Bloqueadas
+										</h4>
+										<div
+											class="space-y-2 max-h-80 sm:max-h-96 overflow-y-auto"
+											id="blocked-dates-list"
+										>
+											<div
+												class="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg"
+											>
+												<div>
+													<p
+														class="font-medium text-gray-800 text-sm sm:text-base"
+													>
+														25 de Dezembro de 2025
+													</p>
+													<p
+														class="text-xs sm:text-sm text-gray-500"
+													>
+														Natal
+													</p>
+												</div>
+												<button
+													onclick="removeBlockedDate('2025-12-25')"
+													class="text-red-600 hover:text-red-800"
+												>
+													<i class="fas fa-times"></i>
+												</button>
+											</div>
+											<div
+												class="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg"
+											>
+												<div>
+													<p
+														class="font-medium text-gray-800 text-sm sm:text-base"
+													>
+														01 de Janeiro de 2026
+													</p>
+													<p
+														class="text-xs sm:text-sm text-gray-500"
+													>
+														Ano Novo
+													</p>
+												</div>
+												<button
+													onclick="removeBlockedDate('2026-01-01')"
+													class="text-red-600 hover:text-red-800"
+												>
+													<i class="fas fa-times"></i>
+												</button>
+											</div>
+										</div>
+										<div
+											class="mt-4 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg"
+										>
+											<div class="flex items-start gap-2">
+												<i
+													class="fas fa-info-circle text-blue-600 mt-1 text-sm"
+												></i>
+												<div
+													class="text-xs sm:text-sm text-blue-800"
+												>
+													<p class="font-medium">
+														Como usar:
+													</p>
+													<p class="mt-1">
+														Clique nos dias do
+														calendário para bloquear
+														ou desbloquear datas.
+														Clientes não poderão
+														agendar serviços nas
+														datas bloqueadas.
+													</p>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Configurações Adicionais -->
+						<div
+							class="mt-4 sm:mt-6 bg-white rounded-lg shadow-sm border border-gray-200"
+						>
+							<div class="p-4 sm:p-6 border-b bg-gray-50">
+								<h3 class="text-lg font-semibold text-gray-800">
+									<i
+										class="fas fa-sliders-h mr-2 text-gray-600"
+									></i>
+									Configurações Adicionais
+								</h3>
+							</div>
+							<div class="p-4 sm:p-6 space-y-4">
+								<div class="flex items-start space-x-3">
+									<input
+										type="checkbox"
+										id="antecedencia-minima"
+										class="mt-1 w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+										checked
+									/>
+									<div class="flex-1">
+										<label
+											for="antecedencia-minima"
+											class="block font-medium text-gray-700 cursor-pointer text-sm sm:text-base"
+										>
+											Exigir antecedência mínima para
+											agendamento
+										</label>
+										<p
+											class="text-xs sm:text-sm text-gray-500 mt-1"
+										>
+											Clientes precisam agendar com pelo
+											menos
+											<select
+												class="mx-1 border rounded px-2 py-1 text-xs sm:text-sm"
+											>
+												<option>1</option>
+												<option selected>2</option>
+												<option>3</option>
+												<option>6</option>
+												<option>12</option>
+												<option>24</option>
+											</select>
+											horas de antecedência
+										</p>
+									</div>
+								</div>
+								<div class="flex items-start space-x-3">
+									<input
+										type="checkbox"
+										id="limite-agendamentos"
+										class="mt-1 w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+									/>
+									<div class="flex-1">
+										<label
+											for="limite-agendamentos"
+											class="block font-medium text-gray-700 cursor-pointer text-sm sm:text-base"
+										>
+											Limitar agendamentos simultâneos
+										</label>
+										<p
+											class="text-xs sm:text-sm text-gray-500 mt-1"
+										>
+											Máximo de
+											<select
+												class="mx-1 border rounded px-2 py-1 text-xs sm:text-sm"
+											>
+												<option>1</option>
+												<option>2</option>
+												<option selected>3</option>
+												<option>4</option>
+												<option>5</option>
+											</select>
+											agendamentos no mesmo horário
+										</p>
+									</div>
+								</div>
+								<div class="flex items-start space-x-3">
+									<input
+										type="checkbox"
+										id="confirmacao-automatica"
+										class="mt-1 w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+									/>
+									<div class="flex-1">
+										<label
+											for="confirmacao-automatica"
+											class="block font-medium text-gray-700 cursor-pointer text-sm sm:text-base"
+										>
+											Confirmação automática de
+											agendamentos
+										</label>
+										<p
+											class="text-xs sm:text-sm text-gray-500 mt-1"
+										>
+											Agendamentos são confirmados
+											automaticamente sem necessidade de
+											aprovação manual
+										</p>
+									</div>
+								</div>
+								<div class="flex items-start space-x-3">
+									<input
+										type="checkbox"
+										id="buffer-entre-servicos"
+										class="mt-1 w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+										checked
+									/>
+									<div class="flex-1">
+										<label
+											for="buffer-entre-servicos"
+											class="block font-medium text-gray-700 cursor-pointer text-sm sm:text-base"
+										>
+											Intervalo entre serviços
+										</label>
+										<p
+											class="text-xs sm:text-sm text-gray-500 mt-1"
+										>
+											Adicionar
+											<select
+												class="mx-1 border rounded px-2 py-1 text-xs sm:text-sm"
+											>
+												<option>5</option>
+												<option selected>10</option>
+												<option>15</option>
+												<option>30</option>
+											</select>
+											minutos de intervalo entre cada
+											serviço
+										</p>
+									</div>
+								</div>
+								<div class="flex items-start space-x-3">
+									<input
+										type="checkbox"
+										id="cancelamento-antecedencia"
+										class="mt-1 w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+										checked
+									/>
+									<div class="flex-1">
+										<label
+											for="cancelamento-antecedencia"
+											class="block font-medium text-gray-700 cursor-pointer text-sm sm:text-base"
+										>
+											Tempo mínimo para cancelamento
+										</label>
+										<p
+											class="text-xs sm:text-sm text-gray-500 mt-1"
+										>
+											Cliente pode cancelar agendamento
+											até
+											<select
+												class="mx-1 border rounded px-2 py-1 text-xs sm:text-sm"
+											>
+												<option>1</option>
+												<option>2</option>
+												<option selected>24</option>
+												<option>48</option>
+											</select>
+											horas antes do horário marcado
+										</p>
+									</div>
+								</div>
+								<div class="flex items-start space-x-3">
+									<input
+										type="checkbox"
+										id="reagendamento-permitido"
+										class="mt-1 w-4 h-4 sm:w-5 sm:h-5 text-gray-800 rounded focus:ring-gray-800"
+										checked
+									/>
+									<div class="flex-1">
+										<label
+											for="reagendamento-permitido"
+											class="block font-medium text-gray-700 cursor-pointer text-sm sm:text-base"
+										>
+											Permitir reagendamento pelo cliente
+										</label>
+										<p
+											class="text-xs sm:text-sm text-gray-500 mt-1"
+										>
+											Cliente pode reagendar seu horário
+											respeitando as regras de
+											antecedência
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Botão Salvar -->
+						<div
+							class="mt-6 flex flex-col sm:flex-row justify-end gap-3"
+						>
+							<button
+								class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium text-sm sm:text-base"
+							>
+								Cancelar
+							</button>
+							<button
+								onclick="saveEstabelecimentoConfig()"
+								class="px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 font-medium text-sm sm:text-base"
+							>
+								<i class="fas fa-save mr-2"></i>Salvar
+								Configurações
+							</button>
+						</div>
+					</div>
+
 					<!-- Página: Configurações -->
 					<div id="configuracoes-estabelecimento" class="page">
 						<h2 class="text-2xl sm:text-3xl font-bold">
@@ -2330,6 +3761,31 @@
 										</p>
 										<p class="text-xs text-gray-500">
 											Visualize seus clientes
+										</p>
+									</div>
+									<i
+										class="fas fa-chevron-right text-gray-400"
+									></i>
+								</a>
+								<a
+									href="#config-estabelecimento"
+									class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center hover:bg-gray-50 transition-colors"
+								>
+									<div
+										class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3"
+									>
+										<i
+											class="fas fa-store-alt text-purple-600"
+										></i>
+									</div>
+									<div class="flex-1">
+										<p
+											class="font-medium text-sm sm:text-base"
+										>
+											Config. Estabelecimento
+										</p>
+										<p class="text-xs text-gray-500">
+											Horários e bloqueios
 										</p>
 									</div>
 									<i
@@ -2749,6 +4205,40 @@
 					document.querySelectorAll('.footer-nav-link');
 				const footerNav = document.getElementById('footer-nav');
 
+				// --- Função de Toggle da Sidebar ---
+				window.toggleSidebar = () => {
+					const sidebar = document.getElementById('sidebar');
+					sidebar.classList.toggle('collapsed');
+
+					// Salvar estado no localStorage
+					const isCollapsed = sidebar.classList.contains('collapsed');
+					localStorage.setItem('sidebarCollapsed', isCollapsed);
+				};
+
+				// Restaurar estado da sidebar ao carregar a página
+				const sidebarCollapsed =
+					localStorage.getItem('sidebarCollapsed');
+				if (sidebarCollapsed === 'true') {
+					document
+						.getElementById('sidebar')
+						.classList.add('collapsed');
+				}
+
+				// --- Posicionar tooltips dinamicamente ---
+				const navLinksWithTooltip =
+					document.querySelectorAll('.nav-link');
+				navLinksWithTooltip.forEach((link) => {
+					link.addEventListener('mouseenter', function () {
+						const tooltip = this.querySelector('.nav-link-tooltip');
+						if (tooltip) {
+							const rect = this.getBoundingClientRect();
+							tooltip.style.top =
+								rect.top + rect.height / 2 + 'px';
+							tooltip.style.transform = 'translateY(-50%)';
+						}
+					});
+				});
+
 				// --- Funções de Ação Rápida (Mobile) ---
 				window.quickActionNovoServico = () => {
 					window.location.hash = '#servicos-estabelecimento';
@@ -2948,6 +4438,332 @@
 						);
 					}
 				};
+
+				// --- Funções de Configuração do Estabelecimento ---
+
+				// Padrão de funcionamento
+				window.setWorkPattern = (pattern) => {
+					const patterns = {
+						'seg-sex': ['seg', 'ter', 'qua', 'qui', 'sex'],
+						'seg-sab': ['seg', 'ter', 'qua', 'qui', 'sex', 'sab'],
+						'seg-dom': [
+							'seg',
+							'ter',
+							'qua',
+							'qui',
+							'sex',
+							'sab',
+							'dom',
+						],
+					};
+
+					// Reset todos os botões
+					document
+						.querySelectorAll('.work-pattern-btn')
+						.forEach((btn) => {
+							btn.classList.remove(
+								'border-gray-800',
+								'bg-gray-50'
+							);
+							btn.classList.add('border-gray-300');
+						});
+
+					// Ativar botão selecionado
+					const selectedBtn = document.getElementById(
+						`pattern-${pattern}`
+					);
+					if (selectedBtn) {
+						selectedBtn.classList.remove('border-gray-300');
+						selectedBtn.classList.add(
+							'border-gray-800',
+							'bg-gray-50'
+						);
+					}
+
+					// Atualizar checkboxes dos dias
+					const allDays = [
+						'dom',
+						'seg',
+						'ter',
+						'qua',
+						'qui',
+						'sex',
+						'sab',
+					];
+					allDays.forEach((day) => {
+						const checkbox = document.getElementById(day);
+						if (checkbox) {
+							checkbox.checked = patterns[pattern].includes(day);
+						}
+					});
+				};
+
+				// Atualizar dias de trabalho
+				window.updateWorkDays = () => {
+					console.log('Dias de trabalho atualizados');
+				};
+
+				// Toggle intervalo de almoço
+				window.toggleIntervalo = () => {
+					const checkbox = document.getElementById('intervalo');
+					const container =
+						document.getElementById('intervalo-horario');
+					if (checkbox && container) {
+						if (checkbox.checked) {
+							container.classList.remove('hidden');
+						} else {
+							container.classList.add('hidden');
+						}
+					}
+				};
+
+				// Toggle horários individuais por profissional
+				window.toggleHorariosIndividuais = () => {
+					const checkbox = document.getElementById(
+						'horarios-individuais'
+					);
+					const container = document.getElementById(
+						'horarios-profissionais-container'
+					);
+					if (checkbox && container) {
+						if (checkbox.checked) {
+							container.classList.remove('hidden');
+						} else {
+							container.classList.add('hidden');
+						}
+					}
+				};
+
+				// Modal para adicionar feriado
+				window.openAddHolidayModal = () => {
+					const nome = prompt('Nome do feriado:');
+					if (nome) {
+						const data = prompt('Data (DD/MM):');
+						if (data) {
+							alert(`Feriado "${nome}" adicionado para ${data}`);
+							// Em produção, adicionar à lista de feriados
+						}
+					}
+				};
+
+				// Calendário de bloqueio - variáveis globais
+				let blockCalendarMonth = 9; // Outubro (0-indexed)
+				let blockCalendarYear = 2025;
+				let blockedDates = new Set(['2025-12-25', '2026-01-01']); // Datas já bloqueadas
+
+				// Renderizar calendário de bloqueio
+				window.updateBlockCalendar = () => {
+					const monthSelect = document.getElementById('block-month');
+					const yearSelect = document.getElementById('block-year');
+
+					if (monthSelect && yearSelect) {
+						blockCalendarMonth = parseInt(monthSelect.value);
+						blockCalendarYear = parseInt(yearSelect.value);
+					}
+
+					renderBlockCalendar();
+				};
+
+				window.previousBlockMonth = () => {
+					blockCalendarMonth--;
+					if (blockCalendarMonth < 0) {
+						blockCalendarMonth = 11;
+						blockCalendarYear--;
+					}
+					document.getElementById('block-month').value =
+						blockCalendarMonth;
+					document.getElementById('block-year').value =
+						blockCalendarYear;
+					renderBlockCalendar();
+				};
+
+				window.nextBlockMonth = () => {
+					blockCalendarMonth++;
+					if (blockCalendarMonth > 11) {
+						blockCalendarMonth = 0;
+						blockCalendarYear++;
+					}
+					document.getElementById('block-month').value =
+						blockCalendarMonth;
+					document.getElementById('block-year').value =
+						blockCalendarYear;
+					renderBlockCalendar();
+				};
+
+				window.toggleBlockDate = (dateStr) => {
+					if (blockedDates.has(dateStr)) {
+						blockedDates.delete(dateStr);
+					} else {
+						blockedDates.add(dateStr);
+					}
+					renderBlockCalendar();
+					updateBlockedDatesList();
+				};
+
+				function renderBlockCalendar() {
+					const container = document.getElementById(
+						'block-calendar-days'
+					);
+					if (!container) return;
+
+					const firstDay = new Date(
+						blockCalendarYear,
+						blockCalendarMonth,
+						1
+					);
+					const lastDay = new Date(
+						blockCalendarYear,
+						blockCalendarMonth + 1,
+						0
+					);
+					const daysInMonth = lastDay.getDate();
+					const startDayOfWeek = firstDay.getDay();
+					const today = new Date();
+
+					let html = '';
+
+					// Células vazias antes do primeiro dia
+					for (let i = 0; i < startDayOfWeek; i++) {
+						html += '<div></div>';
+					}
+
+					// Dias do mês
+					for (let day = 1; day <= daysInMonth; day++) {
+						const date = new Date(
+							blockCalendarYear,
+							blockCalendarMonth,
+							day
+						);
+						const dateStr = `${blockCalendarYear}-${String(
+							blockCalendarMonth + 1
+						).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+						const isBlocked = blockedDates.has(dateStr);
+						const isPast =
+							date <
+							new Date(
+								today.getFullYear(),
+								today.getMonth(),
+								today.getDate()
+							);
+
+						let dayClass =
+							'p-2 sm:p-3 rounded-lg text-center cursor-pointer transition-all duration-200 font-medium text-sm';
+
+						if (isPast) {
+							dayClass =
+								'p-2 sm:p-3 rounded-lg text-center text-gray-300 bg-gray-50 cursor-not-allowed text-sm';
+						} else if (isBlocked) {
+							dayClass +=
+								' bg-red-100 border-2 border-red-500 text-red-700 hover:bg-red-200';
+						} else {
+							dayClass += ' text-gray-700 hover:bg-gray-200';
+						}
+
+						const onclick = isPast
+							? ''
+							: `onclick="toggleBlockDate('${dateStr}')"`;
+						html += `<div class="${dayClass}" ${onclick}>${day}</div>`;
+					}
+
+					container.innerHTML = html;
+				}
+
+				function updateBlockedDatesList() {
+					const container =
+						document.getElementById('blocked-dates-list');
+					if (!container) return;
+
+					const sortedDates = Array.from(blockedDates).sort();
+
+					if (sortedDates.length === 0) {
+						container.innerHTML =
+							'<p class="text-sm text-gray-500 p-3">Nenhuma data bloqueada</p>';
+						return;
+					}
+
+					const monthNames = [
+						'Janeiro',
+						'Fevereiro',
+						'Março',
+						'Abril',
+						'Maio',
+						'Junho',
+						'Julho',
+						'Agosto',
+						'Setembro',
+						'Outubro',
+						'Novembro',
+						'Dezembro',
+					];
+
+					let html = '';
+					sortedDates.forEach((dateStr) => {
+						const [year, month, day] = dateStr.split('-');
+						const monthName = monthNames[parseInt(month) - 1];
+						const formattedDate = `${parseInt(
+							day
+						)} de ${monthName} de ${year}`;
+
+						html += `
+							<div class="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
+								<div>
+									<p class="font-medium text-gray-800 text-sm sm:text-base">${formattedDate}</p>
+									<p class="text-xs sm:text-sm text-gray-500">Data bloqueada</p>
+								</div>
+								<button onclick="removeBlockedDate('${dateStr}')" class="text-red-600 hover:text-red-800">
+									<i class="fas fa-times"></i>
+								</button>
+							</div>
+						`;
+					});
+
+					container.innerHTML = html;
+				}
+
+				window.removeBlockedDate = (dateStr) => {
+					if (confirm('Deseja desbloquear esta data?')) {
+						blockedDates.delete(dateStr);
+						renderBlockCalendar();
+						updateBlockedDatesList();
+					}
+				};
+
+				// Salvar configurações
+				window.saveEstabelecimentoConfig = () => {
+					// Coletar dados dos horários
+					const horarioAbertura =
+						document.getElementById('horario-abertura')?.value;
+					const horarioFechamento =
+						document.getElementById('horario-fechamento')?.value;
+
+					// Coletar dias de trabalho
+					const diasTrabalho = [];
+					['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'].forEach(
+						(dia) => {
+							const checkbox = document.getElementById(dia);
+							if (checkbox?.checked) {
+								diasTrabalho.push(dia);
+							}
+						}
+					);
+
+					console.log('Configurações salvas:', {
+						horarioAbertura,
+						horarioFechamento,
+						diasTrabalho,
+						blockedDates: Array.from(blockedDates),
+					});
+
+					alert(
+						'Configurações salvas com sucesso!\n\nEm produção, estas configurações seriam salvas no banco de dados.'
+					);
+				};
+
+				// Inicializar calendário de bloqueio ao carregar a página
+				if (document.getElementById('block-calendar-days')) {
+					renderBlockCalendar();
+					updateBlockedDatesList();
+				}
 			});
 		</script>
 	</body>
